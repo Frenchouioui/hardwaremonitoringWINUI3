@@ -1,0 +1,88 @@
+<!--
+  HardwareMonitorWinUI3 - Application de surveillance matérielle
+  =============================================================
+  
+  Version actuelle: 1.0.0
+  Framework: .NET 8.0 avec WinUI 3
+  Plateforme cible: Windows 10.0.19041.0 (minimum: 10.0.17763.0)
+  
+  Configuration choisie:
+  - WindowsPackageType: None (application standalone, pas de package MSIX)
+  - WindowsAppSDKSelfContained: false (utilise les dépendances système)
+  - Optimize: true (optimisations de performance activées)
+  - Nullable: enable (vérifications de nullabilité strictes)
+  - ImplicitUsings: enable (imports automatiques pour réduire le code)
+  
+  Dépendances principales:
+  - LibreHardwareMonitorLib 0.9.6-pre632 (surveillance matérielle)
+  - Microsoft.WindowsAppSDK 1.7.250310001 (framework WinUI 3)
+  
+  Architecture: MVVM avec séparation claire des responsabilités
+  - Models: Données et logique métier
+  - ViewModels: Logique de présentation et liaison de données
+  - Views: Interface utilisateur XAML
+  - Services: Services métier et monitoring
+  - Helpers: Utilitaires et helpers
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>HardwareMonitorWinUI3</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <Platform Condition="'$(Platform)' == ''">x64</Platform>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    
+    <!-- Optimisations pour l'architecture MVVM -->
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    
+    <!-- Optimisations de build -->
+    <Optimize Condition="'$(Configuration)' == 'Release'">true</Optimize>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    
+    <!-- Optimisations de performance -->
+    <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
+    <EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
+    <EventSourceSupport>false</EventSourceSupport>
+    <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+    <UseSystemResourceKeys>false</UseSystemResourceKeys>
+    
+    <!-- Configuration pour WinUI 3 -->
+    <EnablePreviewMsixTooling>false</EnablePreviewMsixTooling>
+    <GenerateTemporaryStoreCertificate>false</GenerateTemporaryStoreCertificate>
+    
+    <!-- Configuration pour publication -->
+    <GenerateAppInstallerFile>false</GenerateAppInstallerFile>
+    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+    <AppxAutoIncrementPackageRevision>false</AppxAutoIncrementPackageRevision>
+    <AppxSymbolPackageEnabled>false</AppxSymbolPackageEnabled>
+    <GenerateTestArtifacts>false</GenerateTestArtifacts>
+    <AppxBundle>Never</AppxBundle>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250310001" />
+    <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6-pre632" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project> 

@@ -1,0 +1,20 @@
+<Project>
+  <!-- Désactiver complètement les tâches PRI qui causent des problèmes -->
+  <Target Name="ExpandPriContent" />
+  <Target Name="GenerateProjectPriFile" />
+  <Target Name="CreateProjectPriFileFromMergedPriFiles" />
+  <Target Name="AssignProjectPriFile" />
+  <Target Name="MrtCore" />
+  
+  <!-- Désactiver les tâches APPX/MSIX pour app unpackaged -->
+  <Target Name="GenerateAppxPackageFile" />
+  <Target Name="CreateAppxPackage" />
+  <Target Name="_GetAppxPackageFiles" />
+  
+  <!-- Override pour empêcher l'exécution des tâches problématiques -->
+  <PropertyGroup>
+    <DisablePriGeneration>true</DisablePriGeneration>
+    <GenerateTemporaryStoreCertificate>false</GenerateTemporaryStoreCertificate>
+    <AppxGenerateContentTypes>false</AppxGenerateContentTypes>
+  </PropertyGroup>
+</Project> 
