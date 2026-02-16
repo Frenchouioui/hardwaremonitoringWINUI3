@@ -1,0 +1,41 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Source code files - normalize to CRLF
+*.cs text eol=crlf
+*.xaml text eol=crlf
+*.xml text eol=crlf
+*.csproj text eol=crlf
+*.sln text eol=crlf
+*.props text eol=crlf
+*.targets text eol=crlf
+*.config text eol=crlf
+*.manifest text eol=crlf
+*.resx text eol=crlf
+
+# Web/config files
+*.json text eol=crlf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Documentation
+*.md text eol=crlf
+*.txt text eol=crlf
+
+# Shell scripts should use LF
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.dll binary
+*.exe binary
+*.pdb binary
+*.snupkg binary
+*.nupkg binary

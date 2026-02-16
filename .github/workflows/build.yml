@@ -1,0 +1,65 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main, master ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main, master ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build HardwareMonitorWinUI3.csproj --configuration Release --runtime win-x64 --no-restore
+
+    # Tests skipped - WinUI 3 requires Windows Desktop runtime not available on CI
+    # - name: Run tests
+    #   run: dotnet test HardwareMonitorWinUI3.Tests/HardwareMonitorWinUI3.Tests.csproj --configuration Release -p:Platform=x64 --verbosity normal
+
+    - name: Create ZIP artifact
+      shell: pwsh
+      run: |
+        $sourcePath = "bin/Release/net8.0-windows10.0.19041.0/win-x64/"
+        $zipPath = "HardwareMonitorWinUI3.zip"
+        Compress-Archive -Path "$sourcePath/*" -DestinationPath $zipPath -Force
+        Write-Host "Created ZIP: $(Get-ChildItem $zipPath | Select-Object -ExpandProperty FullName)"
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: HardwareMonitorWinUI3.zip
+
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: HardwareMonitorWinUI3.zip
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

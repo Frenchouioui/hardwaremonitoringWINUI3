@@ -1,0 +1,26 @@
+<Project>
+  <!--
+    Overrides for unpackaged WinUI 3 (WindowsPackageType=None).
+    The PRI resource and APPX/MSIX targets fail when building without MSIX packaging.
+    This is a known issue with the Windows App SDK for unpackaged apps.
+    These empty targets suppress the errors while preserving full app functionality.
+    Theme resources (ThemeResource) still work because they come from the SDK, not from app PRI files.
+  -->
+  
+  <PropertyGroup>
+    <DisablePriGeneration Condition="'$(DisablePriGeneration)' == ''">true</DisablePriGeneration>
+    <GenerateTemporaryStoreCertificate>false</GenerateTemporaryStoreCertificate>
+    <AppxGenerateContentTypes>false</AppxGenerateContentTypes>
+  </PropertyGroup>
+
+  <!-- Override PRI targets to prevent errors with unpackaged apps -->
+  <Target Name="ExpandPriContent" Condition="'$(IsTestProject)' != 'true'" />
+  <Target Name="GenerateProjectPriFile" Condition="'$(IsTestProject)' != 'true'" />
+  <Target Name="CreateProjectPriFileFromMergedPriFiles" Condition="'$(IsTestProject)' != 'true'" />
+  <Target Name="AssignProjectPriFile" Condition="'$(IsTestProject)' != 'true'" />
+  <Target Name="MrtCore" Condition="'$(IsTestProject)' != 'true'" />
+
+  <Target Name="GenerateAppxPackageFile" />
+  <Target Name="CreateAppxPackage" />
+  <Target Name="_GetAppxPackageFiles" />
+</Project>

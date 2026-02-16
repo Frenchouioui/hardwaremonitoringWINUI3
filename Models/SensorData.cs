@@ -1,0 +1,180 @@
+using System;
+using HardwareMonitorWinUI3.Core;
+
+namespace HardwareMonitorWinUI3.Models
+{
+    public class SensorData : BaseViewModel, ISensorData
+    {
+        #region Fields
+
+        private string _name = string.Empty;
+        private string _icon = string.Empty;
+        private string _value = string.Empty;
+        private string _minValue = "Min: N/A";
+        private string _maxValue = "Max: N/A";
+
+        private float? _minRaw;
+        private float? _maxRaw;
+
+        private string _sensorType = string.Empty;
+        private string? _cachedSensorCategory;
+        private string? _cachedCategoryIcon;
+
+        #endregion
+
+        #region Properties
+
+        public string Name
+        {
+            get => _name;
+            set => SetProperty(ref _name, value);
+        }
+
+        public string Icon
+        {
+            get => _icon;
+            set => SetProperty(ref _icon, value);
+        }
+
+        public string Value
+        {
+            get => _value;
+            set => SetProperty(ref _value, value);
+        }
+
+        public string MinValue
+        {
+            get => _minValue;
+            set => SetProperty(ref _minValue, value);
+        }
+
+        public string MaxValue
+        {
+            get => _maxValue;
+            set => SetProperty(ref _maxValue, value);
+        }
+
+        public string SensorType
+        {
+            get => _sensorType;
+            set
+            {
+                if (SetProperty(ref _sensorType, value))
+                {
+                    _cachedSensorCategory = null;
+                    _cachedCategoryIcon = null;
+                    OnPropertyChanged(nameof(SensorCategory));
+                    OnPropertyChanged(nameof(CategoryIcon));
+                }
+            }
+        }
+
+        public string SensorCategory
+        {
+            get
+            {
+                if (_cachedSensorCategory != null)
+                    return _cachedSensorCategory;
+
+                _cachedSensorCategory = _sensorType switch
+                {
+                    "Voltage" => "Voltages",
+                    "Clock" => "Clocks",
+                    "Temperature" => "Temperatures",
+                    "Load" => "Loads",
+                    "Fan" => "Fans",
+                    "Flow" => "Flows",
+                    "Control" => "Controls",
+                    "Level" => "Levels",
+                    "Factor" => "Factors",
+                    "Power" => "Powers",
+                    "Data" => "Data",
+                    "SmallData" => "Small Data",
+                    "Frequency" => "Frequencies",
+                    "Throughput" => "Throughput",
+                    "Current" => "Current",
+                    _ => "Others"
+                };
+                return _cachedSensorCategory;
+            }
+        }
+
+        public string CategoryIcon
+        {
+            get
+            {
+                if (_cachedCategoryIcon != null)
+                    return _cachedCategoryIcon;
+
+                _cachedCategoryIcon = SensorCategory switch
+                {
+                    "Loads" => "\uE9D9",
+                    "Temperatures" => "\uE9CA",
+                    "Fans" => "\uE71E",
+                    "Powers" => "\uE83E",
+                    "Voltages" => "\uE945",
+                    "Clocks" => "\uE823",
+                    "Frequencies" => "\uE823",
+                    "Data" => "\uE8B7",
+                    "Small Data" => "\uE8B7",
+                    "Flows" => "\uE81E",
+                    "Throughput" => "\uE8AB",
+                    "Levels" => "\uE9D9",
+                    "Controls" => "\uE713",
+                    "Factors" => "\uE713",
+                    "Current" => "\uE945",
+                    "Others" => "\uE950",
+                    _ => "\uE950"
+                };
+                return _cachedCategoryIcon;
+            }
+        }
+
+        #endregion
+
+        #region ISensorData Implementation
+
+        public void UpdateMinMax(float currentValue, string unit, string precision = "F1")
+        {
+            if (unit == null) throw new ArgumentNullException(nameof(unit));
+            if (precision == null) throw new ArgumentNullException(nameof(precision));
+
+            if ((unit == "MB/s" || unit == "GB") && currentValue < 0)
+            {
+                return;
+            }
+
+            bool minUpdated = false;
+            bool maxUpdated = false;
+
+            if (!_minRaw.HasValue || currentValue < _minRaw.Value)
+            {
+                _minRaw = currentValue;
+                minUpdated = true;
+            }
+
+            if (!_maxRaw.HasValue || currentValue > _maxRaw.Value)
+            {
+                _maxRaw = currentValue;
+                maxUpdated = true;
+            }
+
+            if (minUpdated || maxUpdated)
+            {
+                string formattedValue = currentValue.ToString(precision);
+                if (minUpdated) MinValue = $"Min: {formattedValue}{unit}";
+                if (maxUpdated) MaxValue = $"Max: {formattedValue}{unit}";
+            }
+        }
+
+        public void ResetMinMax()
+        {
+            _minRaw = null;
+            _maxRaw = null;
+            MinValue = "Min: N/A";
+            MaxValue = "Max: N/A";
+        }
+
+        #endregion
+    }
+}
