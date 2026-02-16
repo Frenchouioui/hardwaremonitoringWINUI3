@@ -16,7 +16,6 @@ A modern hardware monitoring application built with **WinUI 3** and **.NET 8**, 
 - **Min/Max Tracking** - Monitor sensor value ranges with reset capability
 - **Hardware Filtering** - Toggle visibility per hardware category
 - **Diagnostic Mode** - Force hardware re-detection for troubleshooting
-- **Performance Optimized** - Cached lookups, minimal allocations, thread-safe updates
 
 ## Supported Hardware
 
@@ -39,46 +38,18 @@ A modern hardware monitoring application built with **WinUI 3** and **.NET 8**, 
 
 ## Download
 
-Get the latest release from [Releases](https://github.com/Frenchouioui/hardwaremonitoringWINUI3/releases).
+[**Download v1.0.0**](https://github.com/Frenchouioui/hardwaremonitoringWINUI3/releases/tag/v1.0.0)
 
 ## Architecture
 
 ```
 📁 Core/                    → ViewModels and base classes
-   └── AppViewModel.cs      → Main application logic
-   └── BaseViewModel.cs     → INPC + IDisposable base
-
-📁 Hardware/                → Hardware monitoring services
-   └── HardwareService.cs   → LibreHardwareMonitor integration
-   └── IHardwareService.cs  → Service interface
-   └── DiagnosticHelper.cs  → Hardware diagnostics
-   └── HardwareTypeExtensions.cs → Hardware type mapping
-
-📁 Models/                  → Data models
-   └── HardwareNode.cs      → Hardware item with sensors
-   └── SensorData.cs        → Sensor value with min/max
-   └── SensorGroup.cs       → Grouped sensors by type
-   └── ISensorData.cs       → Sensor interface
-   └── AppSettings.cs       → Application settings model
-   └── UpdateVisitor.cs     → Hardware update visitor
-
-📁 Services/                → Application services
-   └── SettingsService.cs   → Settings persistence
-   └── ISettingsService.cs  → Settings interface
-   └── WindowService.cs     → Window state management
-   └── IWindowService.cs    → Window service interface
-
-📁 UI/                      → UI utilities
-   └── Converters.cs        → XAML value converters
-   └── UIExtensions.cs      → WinUI helpers
-   └── UIConstants.cs       → UI constants
-   └── RelayCommand.cs      → ICommand implementation
-
-📁 Views/                   → XAML views
-   └── MainWindow.xaml      → Main window
-
-📁 Shared/                  → Shared utilities
-   └── Logger.cs            → File + Trace logging
+📁 Hardware/                → Hardware monitoring services (LibreHardwareMonitor)
+📁 Models/                  → Data models (HardwareNode, SensorData, AppSettings)
+📁 Services/                → Settings persistence, Window state management
+📁 UI/                      → Converters, Commands, Extensions
+📁 Views/                   → MainWindow.xaml
+📁 Shared/                  → Logger
 ```
 
 ## Development
@@ -92,58 +63,10 @@ Get the latest release from [Releases](https://github.com/Frenchouioui/hardwarem
 ### Build
 
 ```bash
-# Clone the repository
 git clone https://github.com/Frenchouioui/hardwaremonitoringWINUI3.git
 cd hardwaremonitoringWINUI3
-
-# Build Release
 dotnet build HardwareMonitorWinUI3.csproj -c Release
-
-# Run tests
-dotnet test HardwareMonitorWinUI3.Tests/HardwareMonitorWinUI3.Tests.csproj
 ```
-
-### Project Structure
-
-| Project | Description |
-|---------|-------------|
-| `HardwareMonitorWinUI3` | Main WinUI 3 application |
-| `HardwareMonitorWinUI3.Tests` | xUnit test project |
-
-## Key Implementation Details
-
-### Performance Optimizations
-
-- **Sensor Cache**: Dictionary lookup O(1) instead of LINQ ToLookup O(n) per update
-- **Minimal Allocations**: Reuse formatted strings, avoid redundant ToString()
-- **Thread Safety**: SemaphoreSlim for update synchronization
-- **DispatcherQueue**: Efficient UI thread marshalling
-
-### MVVM Pattern
-
-- Strict separation: Model → ViewModel → View
-- Dependency Injection via `ServiceProvider`
-- `RelayCommand` for ICommand implementation
-- `INotifyPropertyChanged` via `BaseViewModel`
-
-### Memory Management
-
-- Proper `IDisposable` implementation
-- No circular references (removed ISensor references)
-- Event unsubscription on dispose
-- CancellationTokenSource cleanup
-
-## Technologies
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| .NET | 8.0 | Runtime |
-| WinUI 3 | 1.7.250310001 | UI Framework |
-| LibreHardwareMonitorLib | 0.9.6-pre632 | Hardware Monitoring |
-| Microsoft.Extensions.DependencyInjection | 8.0.1 | DI Container |
-| xUnit | 2.9.3 | Testing |
-| Moq | 4.20.72 | Mocking |
-| coverlet | 6.0.0 | Code Coverage |
 
 ## Troubleshooting
 
@@ -158,14 +81,6 @@ dotnet test HardwareMonitorWinUI3.Tests/HardwareMonitorWinUI3.Tests.csproj
 1. Verify .NET 8.0 Runtime is installed
 2. Check logs in `%LOCALAPPDATA%\HardwareMonitorWinUI3\Logs`
 3. Run Windows App SDK repair
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## License
 
