@@ -17,7 +17,7 @@ public class SettingsServiceTests
         Assert.Equal(1200, settings.WindowWidth);
         Assert.Equal(800, settings.WindowHeight);
         Assert.Equal(250, settings.RefreshInterval);
-        Assert.Equal((int)BackdropStyle.MicaAlt, settings.BackdropStyle);
+        Assert.Equal(BackdropStyle.MicaAlt, settings.BackdropStyle);
         Assert.True(settings.ShowCPU);
         Assert.True(settings.ShowGPU);
         Assert.True(settings.ShowMotherboard);
@@ -52,15 +52,15 @@ public class SettingsServiceTests
     }
 
     [Theory]
-    [InlineData(-1, 2)]
-    [InlineData(0, 0)]
-    [InlineData(1, 1)]
-    [InlineData(2, 2)]
-    [InlineData(3, 2)]
-    [InlineData(99, 2)]
-    public void BackdropStyle_Validation_ClampsCorrectly(int input, int expected)
+    [InlineData(-1, BackdropStyle.MicaAlt)]
+    [InlineData(0, BackdropStyle.Acrylic)]
+    [InlineData(1, BackdropStyle.Mica)]
+    [InlineData(2, BackdropStyle.MicaAlt)]
+    [InlineData(3, BackdropStyle.MicaAlt)]
+    [InlineData(99, BackdropStyle.MicaAlt)]
+    public void BackdropStyle_Validation_ClampsCorrectly(int input, BackdropStyle expected)
     {
-        var validValue = input >= 0 && input <= 2 ? input : 2;
+        var validValue = Enum.IsDefined(typeof(BackdropStyle), input) ? (BackdropStyle)input : BackdropStyle.MicaAlt;
         Assert.Equal(expected, validValue);
     }
 }

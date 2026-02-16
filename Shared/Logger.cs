@@ -78,8 +78,9 @@ namespace HardwareMonitorWinUI3.Shared
                     _writer?.Flush();
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Trace.WriteLine($"[Logger] Write failed: {ex.Message}");
             }
         }
 
@@ -114,8 +115,9 @@ namespace HardwareMonitorWinUI3.Shared
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Trace.WriteLine($"[Logger] CheckLogRotation failed: {ex.Message}");
             }
         }
 
@@ -133,13 +135,15 @@ namespace HardwareMonitorWinUI3.Shared
                     {
                         File.Delete(file);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Trace.WriteLine($"[Logger] Failed to delete old log {file}: {ex.Message}");
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Trace.WriteLine($"[Logger] CleanupOldLogs failed: {ex.Message}");
             }
         }
     }

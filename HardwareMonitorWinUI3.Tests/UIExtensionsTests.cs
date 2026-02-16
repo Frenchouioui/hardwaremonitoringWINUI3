@@ -1,3 +1,4 @@
+using HardwareMonitorWinUI3.Models;
 using HardwareMonitorWinUI3.UI;
 using LibreHardwareMonitor.Hardware;
 using Xunit;
@@ -103,41 +104,25 @@ public class UIExtensionsTests
     }
 
     [Fact]
-    public void GetBackdropDisplayName_Index0_ReturnsAcrylic()
+    public void GetBackdropDisplayName_Acrylic_ReturnsAcrylic()
     {
-        var result = UIExtensions.GetBackdropDisplayName(0);
+        var result = UIExtensions.GetBackdropDisplayName(BackdropStyle.Acrylic);
 
         Assert.Contains("Acrylic", result);
     }
 
     [Fact]
-    public void GetBackdropDisplayName_Index1_ReturnsMica()
+    public void GetBackdropDisplayName_Mica_ReturnsMica()
     {
-        var result = UIExtensions.GetBackdropDisplayName(1);
+        var result = UIExtensions.GetBackdropDisplayName(BackdropStyle.Mica);
 
         Assert.Contains("Mica", result);
     }
 
     [Fact]
-    public void GetBackdropDisplayName_Index2_ReturnsMicaAlt()
+    public void GetBackdropDisplayName_MicaAlt_ReturnsMicaAlt()
     {
-        var result = UIExtensions.GetBackdropDisplayName(2);
-
-        Assert.Contains("Mica Alt", result);
-    }
-
-    [Fact]
-    public void GetBackdropDisplayName_InvalidIndex_ReturnsDefault()
-    {
-        var result = UIExtensions.GetBackdropDisplayName(99);
-
-        Assert.Contains("Mica Alt", result);
-    }
-
-    [Fact]
-    public void GetBackdropDisplayName_NegativeIndex_ReturnsDefault()
-    {
-        var result = UIExtensions.GetBackdropDisplayName(-1);
+        var result = UIExtensions.GetBackdropDisplayName(BackdropStyle.MicaAlt);
 
         Assert.Contains("Mica Alt", result);
     }

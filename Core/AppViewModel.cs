@@ -392,9 +392,9 @@ namespace HardwareMonitorWinUI3.Core
         {
             if (parameter is int index)
             {
-                _settingsService.Settings.BackdropStyle = index;
+                _settingsService.Settings.BackdropStyle = (BackdropStyle)index;
                 _settingsService.Save();
-                SetBackdropIndicator(UIExtensions.GetBackdropDisplayName(index));
+                SetBackdropIndicator(UIExtensions.GetBackdropDisplayName((BackdropStyle)index));
             }
         }
 

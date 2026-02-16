@@ -15,7 +15,7 @@ namespace HardwareMonitorWinUI3.Models
         public int WindowHeight { get; set; } = 800;
         public bool IsMaximized { get; set; }
 
-        public int BackdropStyle { get; set; } = (int)Models.BackdropStyle.MicaAlt;
+        public BackdropStyle BackdropStyle { get; set; } = BackdropStyle.MicaAlt;
 
         public int RefreshInterval { get; set; } = 250;
 

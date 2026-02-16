@@ -136,25 +136,25 @@ namespace HardwareMonitorWinUI3.UI
             window.SystemBackdrop = new DesktopAcrylicBackdrop();
         }
 
-        public static string GetBackdropDisplayName(int selectedIndex) => selectedIndex switch
+        public static string GetBackdropDisplayName(BackdropStyle style) => style switch
         {
-            0 => "\u2022 Acrylic",
-            1 => "\u2022 Mica",
-            2 => "\u2022 Mica Alt",
+            BackdropStyle.Acrylic => "\u2022 Acrylic",
+            BackdropStyle.Mica => "\u2022 Mica",
+            BackdropStyle.MicaAlt => "\u2022 Mica Alt",
             _ => "\u2022 Mica Alt"
         };
 
-        public static void ApplySelectedBackdrop(this Window window, int selectedIndex)
+        public static void ApplySelectedBackdrop(this Window window, BackdropStyle style)
         {
-            switch (selectedIndex)
+            switch (style)
             {
-                case 0:
+                case BackdropStyle.Acrylic:
                     window.SetAcrylicBackdrop();
                     break;
-                case 1:
+                case BackdropStyle.Mica:
                     window.SetMicaBackdrop(MicaKind.Base);
                     break;
-                case 2:
+                case BackdropStyle.MicaAlt:
                 default:
                     window.SetMicaBackdrop(MicaKind.BaseAlt);
                     break;

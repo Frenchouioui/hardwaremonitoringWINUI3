@@ -32,6 +32,7 @@ namespace HardwareMonitorWinUI3.Hardware
         private readonly object _lockObject = new();
         private readonly SemaphoreSlim _updateLock = new(1, 1);
         private readonly SemaphoreSlim _computerLock = new(1, 1);
+        private readonly Dictionary<HardwareNode, IHardware> _hardwareMap = new();
 
         #endregion
 
@@ -188,6 +189,7 @@ namespace HardwareMonitorWinUI3.Hardware
                         hardwareNode.Dispose();
                     }
                     HardwareNodes.Clear();
+                    _hardwareMap.Clear();
 
                     foreach (var hardware in hardwareList)
                     {
@@ -203,9 +205,9 @@ namespace HardwareMonitorWinUI3.Hardware
                             hardwareNode = new HardwareNode
                             {
                                 Name = hardware.Name,
-                                Category = hardware.HardwareType.ToCategory(),
-                                HardwareReference = hardware
+                                Category = hardware.HardwareType.ToCategory()
                             };
+                            _hardwareMap[hardwareNode] = hardware;
                             ProcessSensors(hardware, hardwareNode);
                         }
 
@@ -220,9 +222,9 @@ namespace HardwareMonitorWinUI3.Hardware
                                 var subNode = new HardwareNode
                                 {
                                     Name = displayName,
-                                    Category = subHardware.HardwareType.ToCategory(),
-                                    HardwareReference = subHardware
+                                    Category = subHardware.HardwareType.ToCategory()
                                 };
+                                _hardwareMap[subNode] = subHardware;
 
                                 ProcessSensors(subHardware, subNode);
 
@@ -302,14 +304,14 @@ namespace HardwareMonitorWinUI3.Hardware
                     {
                         foreach (var hardwareNode in HardwareNodes)
                         {
-                            if (hardwareNode.HardwareReference != null)
+                            if (_hardwareMap.TryGetValue(hardwareNode, out var hardware))
                             {
-                                UpdateNodeSensors(hardwareNode, hardwareNode.HardwareReference);
+                                UpdateNodeSensors(hardwareNode, hardware);
                                 foreach (var subNode in hardwareNode.SubHardware)
                                 {
-                                    if (subNode.HardwareReference != null)
+                                    if (_hardwareMap.TryGetValue(subNode, out var subHardware))
                                     {
-                                        UpdateNodeSensors(subNode, subNode.HardwareReference);
+                                        UpdateNodeSensors(subNode, subHardware);
                                     }
                                 }
                             }
@@ -604,6 +606,7 @@ namespace HardwareMonitorWinUI3.Hardware
                     node.Dispose();
                 }
                 HardwareNodes.Clear();
+                _hardwareMap.Clear();
 
                 _computer?.Close();
                 _computer = null;

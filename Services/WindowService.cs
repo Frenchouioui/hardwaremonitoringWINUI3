@@ -142,8 +142,9 @@ namespace HardwareMonitorWinUI3.Services
                 }
                 return false;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.LogWarning($"IsPositionOnScreen check failed: {ex.Message}");
                 return true;
             }
         }

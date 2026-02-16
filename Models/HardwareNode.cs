@@ -61,8 +61,6 @@ namespace HardwareMonitorWinUI3.Models
         public ObservableCollection<HardwareNode> SubHardware { get; } = new();
         public ObservableCollection<SensorGroup> SensorGroups { get; } = new();
 
-        internal LibreHardwareMonitor.Hardware.IHardware? HardwareReference { get; init; }
-
         internal Dictionary<string, SensorData> SensorCache => _sensorCache ??= BuildSensorCache();
 
         private Dictionary<string, SensorData> BuildSensorCache()

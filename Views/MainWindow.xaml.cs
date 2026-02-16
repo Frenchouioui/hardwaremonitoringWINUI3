@@ -30,15 +30,15 @@ namespace HardwareMonitorWinUI3.Views
                 Title = UIConstants.ApplicationTitle;
                 UIExtensions.SetupModernTitleBar(this);
 
-                var backdropIndex = settingsService.Settings.BackdropStyle;
+                var backdropIndex = (int)settingsService.Settings.BackdropStyle;
                 SafeApplyBackdrop(backdropIndex);
                 BackdropSelector.SelectedIndex = backdropIndex;
 
                 ViewModel.NotifySettingsLoaded();
 
-                _ = InitializeHardwareAsync();
-
                 _uiReady = true;
+
+                _ = InitializeHardwareAsync();
             }
             catch (Exception ex)
             {
@@ -51,7 +51,7 @@ namespace HardwareMonitorWinUI3.Views
         {
             try
             {
-                UIExtensions.ApplySelectedBackdrop(this, backdropIndex);
+                UIExtensions.ApplySelectedBackdrop(this, (BackdropStyle)backdropIndex);
             }
             catch (Exception ex)
             {

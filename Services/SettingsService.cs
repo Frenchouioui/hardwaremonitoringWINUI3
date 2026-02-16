@@ -40,8 +40,8 @@ namespace HardwareMonitorWinUI3.Services
             if (_settings.WindowHeight < 300)
                 _settings.WindowHeight = 800;
 
-            if (_settings.BackdropStyle < 0 || _settings.BackdropStyle > 2)
-                _settings.BackdropStyle = 2;
+            if (!Enum.IsDefined(typeof(BackdropStyle), _settings.BackdropStyle))
+                _settings.BackdropStyle = BackdropStyle.MicaAlt;
         }
 
         public void Load()
@@ -50,6 +50,14 @@ namespace HardwareMonitorWinUI3.Services
             {
                 if (File.Exists(SettingsFilePath))
                 {
+                    var fileInfo = new FileInfo(SettingsFilePath);
+                    if (fileInfo.Length > 1024 * 1024)
+                    {
+                        Logger.LogWarning($"Settings file too large ({fileInfo.Length} bytes), using defaults");
+                        _settings = new AppSettings();
+                        return;
+                    }
+
                     var json = File.ReadAllText(SettingsFilePath);
                     var settings = JsonSerializer.Deserialize<AppSettings>(json, JsonOptions);
 

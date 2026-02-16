@@ -15,7 +15,7 @@ public class AppSettingsTests
         Assert.Equal(1200, settings.WindowWidth);
         Assert.Equal(800, settings.WindowHeight);
         Assert.Equal(250, settings.RefreshInterval);
-        Assert.Equal((int)BackdropStyle.MicaAlt, settings.BackdropStyle);
+        Assert.Equal(BackdropStyle.MicaAlt, settings.BackdropStyle);
         Assert.True(settings.ShowCPU);
         Assert.True(settings.ShowGPU);
         Assert.True(settings.ShowMotherboard);

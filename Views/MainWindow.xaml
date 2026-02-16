@@ -357,6 +357,173 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
+
+                            <ItemsControl ItemsSource="{Binding SubHardware}"
+                                         Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
+                                         Margin="16,8,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="models:HardwareNode">
+                                        <Border Style="{StaticResource HardwareCardStyle}">
+                                            <StackPanel Spacing="12">
+                                                <Button Background="Transparent"
+                                                        BorderThickness="0"
+                                                        Padding="0"
+                                                        HorizontalAlignment="Stretch"
+                                                        HorizontalContentAlignment="Stretch"
+                                                        Click="ToggleExpand_Click"
+                                                        Tag="{Binding}">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <FontIcon Grid.Column="0"
+                                                                  Glyph="{Binding IsExpanded, Converter={StaticResource BoolToExpandIconConverter}}"
+                                                                  FontSize="12"
+                                                                  Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                  Margin="0,0,8,0"
+                                                                  VerticalAlignment="Center"/>
+
+                                                        <FontIcon Grid.Column="1"
+                                                                  Glyph="{x:Bind CategoryIcon, Mode=OneWay}"
+                                                                  FontSize="14"
+                                                                  Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                                                  Margin="0,0,12,0"
+                                                                  VerticalAlignment="Center"/>
+
+                                                        <TextBlock Grid.Column="2"
+                                                                  Text="{Binding Name}"
+                                                                  FontSize="14"
+                                                                  FontWeight="SemiBold"
+                                                                  VerticalAlignment="Center"/>
+
+                                                        <TextBlock Grid.Column="3"
+                                                                   Text="{Binding SensorCount}"
+                                                                   FontSize="11"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="8,0,0,0"/>
+                                                    </Grid>
+                                                </Button>
+
+                                                <ItemsControl ItemsSource="{Binding SensorGroups}"
+                                                             Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:SensorGroup">
+                                                            <Border Style="{StaticResource SensorGroupStyle}">
+                                                                <StackPanel>
+                                                                    <Button Background="Transparent"
+                                                                            BorderThickness="0"
+                                                                            Padding="0"
+                                                                            HorizontalAlignment="Stretch"
+                                                                            HorizontalContentAlignment="Stretch"
+                                                                            Click="ToggleGroup_Click"
+                                                                            Tag="{Binding}">
+                                                                        <Grid>
+                                                                            <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition Width="Auto"/>
+                                                                                <ColumnDefinition Width="Auto"/>
+                                                                                <ColumnDefinition Width="*"/>
+                                                                                <ColumnDefinition Width="Auto"/>
+                                                                            </Grid.ColumnDefinitions>
+
+                                                                            <FontIcon Grid.Column="0"
+                                                                                      FontFamily="Segoe MDL2 Assets"
+                                                                                      Glyph="{Binding IsExpanded, Converter={StaticResource BoolToExpandIconConverter}}"
+                                                                                      FontSize="12"
+                                                                                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                      Margin="0,0,8,0"
+                                                                                      VerticalAlignment="Center"/>
+
+                                                                            <FontIcon Grid.Column="1"
+                                                                                      Glyph="{Binding CategoryIcon}"
+                                                                                      FontFamily="Segoe MDL2 Assets"
+                                                                                      FontSize="14"
+                                                                                      Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                                                                      Margin="0,0,12,0"
+                                                                                      VerticalAlignment="Center"/>
+
+                                                                            <TextBlock Grid.Column="2"
+                                                                                      Text="{Binding CategoryName}"
+                                                                                      FontSize="13"
+                                                                                      FontWeight="SemiBold"
+                                                                                      VerticalAlignment="Center"/>
+
+                                                                            <TextBlock Grid.Column="3"
+                                                                                       Text="{Binding SensorCount}"
+                                                                                       FontSize="11"
+                                                                                       FontWeight="SemiBold"
+                                                                                       Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                                                                       VerticalAlignment="Center"
+                                                                                       Margin="8,0,0,0"/>
+                                                                        </Grid>
+                                                                    </Button>
+
+                                                                    <ItemsControl ItemsSource="{Binding Sensors}"
+                                                                                 Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                                        <ItemsControl.ItemsPanel>
+                                                                            <ItemsPanelTemplate>
+                                                                                <ItemsWrapGrid Orientation="Horizontal"/>
+                                                                            </ItemsPanelTemplate>
+                                                                        </ItemsControl.ItemsPanel>
+                                                                        <ItemsControl.ItemTemplate>
+                                                                            <DataTemplate x:DataType="models:SensorData">
+                                                                                <Border Style="{StaticResource SensorCardStyle}">
+                                                                                    <Grid>
+                                                                                        <Grid.RowDefinitions>
+                                                                                            <RowDefinition Height="Auto"/>
+                                                                                            <RowDefinition Height="Auto"/>
+                                                                                            <RowDefinition Height="Auto"/>
+                                                                                        </Grid.RowDefinitions>
+
+                                                                                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" Margin="0,0,0,2">
+                                                                                            <FontIcon Glyph="{Binding Icon}"
+                                                                                                      FontFamily="Segoe MDL2 Assets"
+                                                                                                      FontSize="12"
+                                                                                                      VerticalAlignment="Center"/>
+                                                                                            <TextBlock Text="{Binding Name}"
+                                                                                                      FontSize="13"
+                                                                                                      FontWeight="SemiBold"
+                                                                                                      Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+                                                                                                      TextTrimming="CharacterEllipsis"
+                                                                                                      MaxLines="1"
+                                                                                                      VerticalAlignment="Center"/>
+                                                                                        </StackPanel>
+
+                                                                                        <TextBlock Grid.Row="1"
+                                                                                                   Text="{Binding Value}"
+                                                                                                   FontSize="18"
+                                                                                                   FontWeight="Bold"
+                                                                                                   Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                                                                                   Margin="0,2,0,2"/>
+
+                                                                                        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="12" Margin="0,2,0,0">
+                                                                                            <TextBlock Text="{Binding MinValue}" FontSize="11"
+                                                                                                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                                      FontWeight="Medium"/>
+                                                                                            <TextBlock Text="{Binding MaxValue}" FontSize="11"
+                                                                                                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                                      FontWeight="Medium"/>
+                                                                                        </StackPanel>
+                                                                                    </Grid>
+                                                                                </Border>
+                                                                            </DataTemplate>
+                                                                        </ItemsControl.ItemTemplate>
+                                                                    </ItemsControl>
+                                                                </StackPanel>
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </StackPanel>
                     </Border>
                 </DataTemplate>

@@ -33,8 +33,8 @@ namespace HardwareMonitorWinUI3.UI
         public static string GetCategoryIcon(HardwareCategory category) => category switch
         {
             HardwareCategory.Cpu => "\uE950",
-            HardwareCategory.Gpu => "\uE950",
-            HardwareCategory.Motherboard => "\uE950",
+            HardwareCategory.Gpu => "\uE7F4",
+            HardwareCategory.Motherboard => "\uE9EB",
             HardwareCategory.Storage => "\uE88E",
             HardwareCategory.Memory => "\uE9D9",
             HardwareCategory.Network => "\uE968",

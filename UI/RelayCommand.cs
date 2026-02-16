@@ -63,8 +63,9 @@ namespace HardwareMonitorWinUI3.UI
             {
                 _execute((T?)parameter);
             }
-            catch (InvalidCastException)
+            catch (InvalidCastException ex)
             {
+                System.Diagnostics.Trace.WriteLine($"[RelayCommand] InvalidCastException: {ex.Message}. Parameter type: {parameter?.GetType().Name ?? "null"}, Expected: {typeof(T).Name}");
             }
         }
 
