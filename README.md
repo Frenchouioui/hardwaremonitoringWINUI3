@@ -29,16 +29,16 @@ A modern hardware monitoring application built with **WinUI 3** and **.NET 8**, 
 | **Network** | Ethernet, Wi-Fi adapters |
 | **Controllers** | SuperIO, Embedded Controllers |
 
+## Download
+
+Get the latest [release](https://github.com/Frenchouioui/hardwaremonitoringWINUI3/releases).
+
 ## Requirements
 
 - **Windows 11** (Windows 10 19041+ supported)
 - **.NET 8.0 Desktop Runtime** - [Download](https://dotnet.microsoft.com/download/dotnet/8.0)
-- **PawnIO Driver** - [Download](https://github.com/namazso/PawnIO.Setup/releases)
+- **PawnIO Driver** - [Download](https://github.com/namazso/PawnIO.Setup/releases/download/2.0.1/PawnIO_setup.exe)
 - **Administrator Rights** - Required for hardware sensor access
-
-## Download
-
-[**Download v1.0.0**](https://github.com/Frenchouioui/hardwaremonitoringWINUI3/releases/tag/v1.0.0)
 
 ## Architecture
 
