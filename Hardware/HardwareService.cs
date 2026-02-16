@@ -180,6 +180,15 @@ namespace HardwareMonitorWinUI3.Hardware
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cts.Token);
 
             var tcs = new TaskCompletionSource();
+            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            using var linkedForTimeout = CancellationTokenSource.CreateLinkedTokenSource(linked.Token, timeoutCts.Token);
+
+            timeoutCts.Token.Register(() =>
+            {
+                tcs.TrySetCanceled(timeoutCts.Token);
+                Logger.LogWarning("BuildHardwareStructureAsync timed out after 5 seconds");
+            });
+
             bool enqueued = _dispatcherQueue.TryEnqueue(() =>
             {
                 try
@@ -256,17 +265,17 @@ namespace HardwareMonitorWinUI3.Hardware
                         Logger.LogInfo($"   - {hardwareNode.Name}");
                     }
 
-                    tcs.SetResult();
+                    tcs.TrySetResult();
                 }
                 catch (Exception ex)
                 {
-                    tcs.SetException(ex);
+                    tcs.TrySetException(ex);
                 }
             });
 
             if (!enqueued)
             {
-                tcs.SetException(new InvalidOperationException("Failed to enqueue operation on dispatcher queue"));
+                tcs.TrySetException(new InvalidOperationException("Failed to enqueue operation on dispatcher queue"));
             }
 
             await tcs.Task;
@@ -275,7 +284,10 @@ namespace HardwareMonitorWinUI3.Hardware
         public async Task UpdateSensorValuesAsync(CancellationToken cancellationToken = default)
         {
             if (!await _updateLock.WaitAsync(0, cancellationToken).ConfigureAwait(false))
+            {
+                Logger.LogWarning("Update skipped: lock busy");
                 return;
+            }
 
             try
             {
@@ -298,6 +310,14 @@ namespace HardwareMonitorWinUI3.Hardware
                 }
 
                 var tcs = new TaskCompletionSource();
+                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+                timeoutCts.Token.Register(() =>
+                {
+                    tcs.TrySetCanceled(timeoutCts.Token);
+                    Logger.LogWarning("UpdateSensorValuesAsync timed out after 5 seconds");
+                });
+
                 bool enqueued = _dispatcherQueue.TryEnqueue(() =>
                 {
                     try
@@ -316,17 +336,17 @@ namespace HardwareMonitorWinUI3.Hardware
                                 }
                             }
                         }
-                        tcs.SetResult();
+                        tcs.TrySetResult();
                     }
                     catch (Exception ex)
                     {
-                        tcs.SetException(ex);
+                        tcs.TrySetException(ex);
                     }
                 });
 
                 if (!enqueued)
                 {
-                    tcs.SetException(new InvalidOperationException("Failed to enqueue update on dispatcher queue"));
+                    tcs.TrySetException(new InvalidOperationException("Failed to enqueue update on dispatcher queue"));
                 }
 
                 await tcs.Task.ConfigureAwait(true);

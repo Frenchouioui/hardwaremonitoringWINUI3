@@ -43,8 +43,13 @@ namespace HardwareMonitorWinUI3.Views
             catch (Exception ex)
             {
                 Logger.LogCriticalError("MainWindow constructor", ex);
-                UIExtensions.ShowCriticalErrorDialog(ex, Content?.XamlRoot);
+                _ = ShowCriticalErrorDialogAsync(ex);
             }
+        }
+
+        private async Task ShowCriticalErrorDialogAsync(Exception ex)
+        {
+            await UIExtensions.ShowCriticalErrorDialog(ex, Content?.XamlRoot);
         }
 
         private void SafeApplyBackdrop(int backdropIndex)

@@ -184,7 +184,7 @@ namespace HardwareMonitorWinUI3.UI
 
         #region Error Dialog
 
-        public static void ShowCriticalErrorDialog(Exception ex, Microsoft.UI.Xaml.XamlRoot? xamlRoot)
+        public static async System.Threading.Tasks.Task ShowCriticalErrorDialog(Exception ex, Microsoft.UI.Xaml.XamlRoot? xamlRoot)
         {
             if (xamlRoot == null)
             {
@@ -200,7 +200,7 @@ namespace HardwareMonitorWinUI3.UI
                 XamlRoot = xamlRoot
             };
 
-            _ = dialog.ShowAsync();
+            await dialog.ShowAsync();
         }
 
         #endregion
