@@ -34,7 +34,7 @@ namespace HardwareMonitorWinUI3.UI
         {
             HardwareCategory.Cpu => "\uE950",
             HardwareCategory.Gpu => "\uE7F4",
-            HardwareCategory.Motherboard => "\uE9EB",
+            HardwareCategory.Motherboard => "\uEDA2",
             HardwareCategory.Storage => "\uE88E",
             HardwareCategory.Memory => "\uE9D9",
             HardwareCategory.Network => "\uE968",
