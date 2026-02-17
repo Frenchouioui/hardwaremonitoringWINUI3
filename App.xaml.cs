@@ -73,7 +73,7 @@ namespace HardwareMonitorWinUI3
             Exit();
         }
 
-private void CleanupResources()
+        private void CleanupResources()
         {
             try
             {

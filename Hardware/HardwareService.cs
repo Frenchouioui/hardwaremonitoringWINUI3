@@ -472,7 +472,7 @@ namespace HardwareMonitorWinUI3.Hardware
 
         #region Diagnostic
 
-public async Task ForceHardwareRedetectionAsync(CancellationToken cancellationToken = default)
+        public async Task ForceHardwareRedetectionAsync(CancellationToken cancellationToken = default)
         {
             _isInitialized = false;
 

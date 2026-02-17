@@ -62,13 +62,13 @@ namespace HardwareMonitorWinUI3.Models
         public ObservableCollection<HardwareNode> SubHardware { get; } = new();
         public ObservableCollection<SensorGroup> SensorGroups { get; } = new();
 
-internal Dictionary<string, SensorData> SensorCache
+        internal Dictionary<string, SensorData> SensorCache
         {
             get
             {
                 var cache = _sensorCache;
                 if (cache != null) return cache;
-                
+
                 var newCache = BuildSensorCache();
                 Interlocked.CompareExchange(ref _sensorCache, newCache, null);
                 return _sensorCache!;

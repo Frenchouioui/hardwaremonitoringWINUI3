@@ -37,9 +37,8 @@ jobs:
     - name: Build
       run: dotnet build HardwareMonitorWinUI3.csproj --configuration Release --runtime win-x64 --no-restore
 
-    # Tests skipped - WinUI 3 requires Windows Desktop runtime not available on CI
-    # - name: Run tests
-    #   run: dotnet test HardwareMonitorWinUI3.Tests/HardwareMonitorWinUI3.Tests.csproj --configuration Release -p:Platform=x64 --verbosity normal
+    - name: Run tests
+      run: dotnet test HardwareMonitorWinUI3.Tests/HardwareMonitorWinUI3.Tests.csproj --configuration Release --verbosity normal
 
     - name: Create ZIP artifact
       shell: pwsh

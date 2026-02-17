@@ -388,7 +388,7 @@ namespace HardwareMonitorWinUI3.Core
             _ = RunHardwareDiagnosticAsync();
         }
 
-private void ExecuteChangeBackdrop(object? parameter)
+        private void ExecuteChangeBackdrop(object? parameter)
         {
             if (parameter is int index && Enum.IsDefined(typeof(BackdropStyle), index))
             {

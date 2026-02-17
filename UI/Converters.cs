@@ -79,8 +79,9 @@ namespace HardwareMonitorWinUI3.UI
                     return resource ?? defaultValue;
                 }
             }
-            catch
+            catch (Exception)
             {
+                System.Diagnostics.Trace.WriteLine($"Failed to get resource: {key}");
             }
             return defaultValue;
         }
