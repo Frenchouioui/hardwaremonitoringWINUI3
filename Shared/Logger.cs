@@ -9,7 +9,6 @@ namespace HardwareMonitorWinUI3.Shared
     public static class Logger
     {
         private static readonly string LogDirectory;
-        private static readonly string LogFilePath;
         private static readonly object Lock = new();
         private static StreamWriter? _writer;
         private static DateTime _currentLogDate;
@@ -35,7 +34,6 @@ namespace HardwareMonitorWinUI3.Shared
                 LogDirectory = Path.GetTempPath();
             }
 
-            LogFilePath = Path.Combine(LogDirectory, $"monitor_{DateTime.Now:yyyy-MM-dd}.log");
             _currentLogDate = DateTime.Today;
         }
 
@@ -111,18 +109,19 @@ namespace HardwareMonitorWinUI3.Shared
         {
             try
             {
-                if (File.Exists(LogFilePath))
+                string currentPath = Path.Combine(LogDirectory, $"monitor_{DateTime.Now:yyyy-MM-dd}.log");
+                if (File.Exists(currentPath))
                 {
-                    var fileInfo = new FileInfo(LogFilePath);
+                    var fileInfo = new FileInfo(currentPath);
                     if (fileInfo.Length > MaxLogFileSize)
                     {
                         _writer?.Dispose();
                         _writer = null;
-                        
+
                         string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
                         string backupPath = Path.Combine(LogDirectory, $"monitor_{timestamp}.log.bak");
-                        File.Move(LogFilePath, backupPath);
-                        
+                        File.Move(currentPath, backupPath);
+
                         ScheduleCleanupOldLogs();
                     }
                 }
