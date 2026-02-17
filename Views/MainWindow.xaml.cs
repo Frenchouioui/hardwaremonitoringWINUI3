@@ -14,6 +14,7 @@ namespace HardwareMonitorWinUI3.Views
     {
         public AppViewModel ViewModel { get; }
         private bool _uiReady;
+        private bool _isBackdropChanging;
         private bool _disposed;
 
         public MainWindow(
@@ -89,12 +90,23 @@ namespace HardwareMonitorWinUI3.Views
 
         private void BackdropSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!_uiReady) return;
+            if (!_uiReady || _isBackdropChanging) return;
 
             if (sender is ComboBox comboBox && comboBox.SelectedIndex >= 0)
             {
-                SafeApplyBackdrop(comboBox.SelectedIndex);
-                ViewModel?.ChangeBackdropCommand?.Execute(comboBox.SelectedIndex);
+                _isBackdropChanging = true;
+                comboBox.IsEnabled = false;
+                
+                try
+                {
+                    SafeApplyBackdrop(comboBox.SelectedIndex);
+                    ViewModel?.ChangeBackdropCommand?.Execute(comboBox.SelectedIndex);
+                }
+                finally
+                {
+                    _isBackdropChanging = false;
+                    comboBox.IsEnabled = true;
+                }
             }
         }
 

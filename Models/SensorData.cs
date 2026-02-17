@@ -134,13 +134,17 @@ namespace HardwareMonitorWinUI3.Models
 
         #region ISensorData Implementation
 
-        public void UpdateMinMax(float currentValue, string unit, string precision = "F1")
+public void UpdateMinMax(float currentValue, string unit, string precision = "F1")
         {
             if (unit == null) throw new ArgumentNullException(nameof(unit));
             if (precision == null) throw new ArgumentNullException(nameof(precision));
 
             if ((unit == "MB/s" || unit == "GB") && currentValue < 0)
             {
+                // Negative throughput/data values indicate idle state or sensor error.
+                // These should NOT affect min/max tracking as they don't represent
+                // actual data transfer. For example, network adapters may report
+                // negative values when no traffic is flowing.
                 return;
             }
 

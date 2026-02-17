@@ -472,7 +472,7 @@ namespace HardwareMonitorWinUI3.Hardware
 
         #region Diagnostic
 
-        public async Task ForceHardwareRedetectionAsync(CancellationToken cancellationToken = default)
+public async Task ForceHardwareRedetectionAsync(CancellationToken cancellationToken = default)
         {
             _isInitialized = false;
 
@@ -496,7 +496,14 @@ namespace HardwareMonitorWinUI3.Hardware
                         _computerLock.Release();
                     }
 
-                    oldComputer?.Close();
+                    try
+                    {
+                        oldComputer?.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning($"Failed to close old computer: {ex.Message}");
+                    }
                     oldComputer = null;
 
                     newComputer = new Computer

@@ -388,13 +388,14 @@ namespace HardwareMonitorWinUI3.Core
             _ = RunHardwareDiagnosticAsync();
         }
 
-        private void ExecuteChangeBackdrop(object? parameter)
+private void ExecuteChangeBackdrop(object? parameter)
         {
-            if (parameter is int index)
+            if (parameter is int index && Enum.IsDefined(typeof(BackdropStyle), index))
             {
-                _settingsService.Settings.BackdropStyle = (BackdropStyle)index;
+                var backdropStyle = (BackdropStyle)index;
+                _settingsService.Settings.BackdropStyle = backdropStyle;
                 _settingsService.Save();
-                SetBackdropIndicator(UIExtensions.GetBackdropDisplayName((BackdropStyle)index));
+                SetBackdropIndicator(UIExtensions.GetBackdropDisplayName(backdropStyle));
             }
         }
 

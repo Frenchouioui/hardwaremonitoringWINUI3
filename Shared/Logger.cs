@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HardwareMonitorWinUI3.Shared
 {
@@ -12,6 +14,7 @@ namespace HardwareMonitorWinUI3.Shared
         private static StreamWriter? _writer;
         private static DateTime _currentLogDate;
         private const long MaxLogFileSize = 10 * 1024 * 1024;
+        private static bool _cleanupRunning;
 
         static Logger()
         {
@@ -63,6 +66,15 @@ namespace HardwareMonitorWinUI3.Shared
                 Write("CRITICAL", $"  Stack: {exception.StackTrace}");
         }
 
+        public static void Close()
+        {
+            lock (Lock)
+            {
+                _writer?.Dispose();
+                _writer = null;
+            }
+        }
+
         private static void Write(string level, string? message)
         {
             var line = $"[{DateTime.Now:HH:mm:ss.fff}] [{level}] {message ?? "(null)"}";
@@ -111,7 +123,7 @@ namespace HardwareMonitorWinUI3.Shared
                         string backupPath = Path.Combine(LogDirectory, $"monitor_{timestamp}.log.bak");
                         File.Move(LogFilePath, backupPath);
                         
-                        CleanupOldLogs();
+                        ScheduleCleanupOldLogs();
                     }
                 }
             }
@@ -121,29 +133,49 @@ namespace HardwareMonitorWinUI3.Shared
             }
         }
 
-        private static void CleanupOldLogs()
+        private static void ScheduleCleanupOldLogs()
         {
-            try
+            if (_cleanupRunning) return;
+            
+            lock (Lock)
             {
-                var logFiles = Directory.GetFiles(LogDirectory, "monitor_*.log*")
-                    .OrderByDescending(f => f)
-                    .Skip(7);
-
-                foreach (var file in logFiles)
-                {
-                    try
-                    {
-                        File.Delete(file);
-                    }
-                    catch (Exception ex)
-                    {
-                        Trace.WriteLine($"[Logger] Failed to delete old log {file}: {ex.Message}");
-                    }
-                }
+                if (_cleanupRunning) return;
+                _cleanupRunning = true;
             }
-            catch (Exception ex)
+
+            _ = Task.Run(async () =>
             {
-                Trace.WriteLine($"[Logger] CleanupOldLogs failed: {ex.Message}");
+                try
+                {
+                    await CleanupOldLogsAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine($"[Logger] CleanupOldLogsAsync failed: {ex.Message}");
+                }
+                finally
+                {
+                    _cleanupRunning = false;
+                }
+            });
+        }
+
+        private static async Task CleanupOldLogsAsync()
+        {
+            var logFiles = (await Task.Run(() => Directory.GetFiles(LogDirectory, "monitor_*.log*")).ConfigureAwait(false))
+                .OrderByDescending(f => f)
+                .Skip(7);
+
+            foreach (var file in logFiles)
+            {
+                try
+                {
+                    await Task.Run(() => File.Delete(file)).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine($"[Logger] Failed to delete old log {file}: {ex.Message}");
+                }
             }
         }
     }

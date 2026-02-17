@@ -73,7 +73,7 @@ namespace HardwareMonitorWinUI3
             Exit();
         }
 
-        private void CleanupResources()
+private void CleanupResources()
         {
             try
             {
@@ -87,6 +87,8 @@ namespace HardwareMonitorWinUI3
                 _serviceProvider?.Dispose();
                 _serviceProvider = null;
                 _dispatcherQueue = null;
+
+                Logger.Close();
             }
             catch (Exception ex)
             {

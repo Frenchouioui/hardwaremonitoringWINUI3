@@ -83,7 +83,7 @@ namespace HardwareMonitorWinUI3.Services
             }
         }
 
-        public void CenterWindow(Window window)
+public void CenterWindow(Window window)
         {
             if (window == null) return;
 
@@ -96,17 +96,36 @@ namespace HardwareMonitorWinUI3.Services
                 if (displayArea == null) return;
 
                 var workArea = displayArea.WorkArea;
+                var adaptiveSize = CalculateAdaptiveSize(workArea);
 
-                int centerX = workArea.X + (workArea.Width - appWindow.Size.Width) / 2;
-                int centerY = workArea.Y + (workArea.Height - appWindow.Size.Height) / 2;
+                appWindow.Resize(adaptiveSize);
+
+                int centerX = workArea.X + (workArea.Width - adaptiveSize.Width) / 2;
+                int centerY = workArea.Y + (workArea.Height - adaptiveSize.Height) / 2;
 
                 appWindow.Move(new PointInt32(centerX, centerY));
-                Logger.LogInfo("Window centered on screen");
+                Logger.LogInfo("Window centered on screen with adaptive size");
             }
             catch (Exception ex)
             {
                 Logger.LogError("Failed to center window", ex);
             }
+        }
+
+        public SizeInt32 CalculateAdaptiveSize(RectInt32 workArea)
+        {
+            int width = (int)(workArea.Width * 0.8);
+            int height = (int)(workArea.Height * 0.8);
+            
+            const int maxWidth = 1600;
+            const int maxHeight = 1000;
+            const int minWidth = 800;
+            const int minHeight = 600;
+            
+            width = Math.Clamp(width, minWidth, maxWidth);
+            height = Math.Clamp(height, minHeight, maxHeight);
+            
+            return new SizeInt32(width, height);
         }
 
         internal static AppWindow? GetAppWindow(Window window)

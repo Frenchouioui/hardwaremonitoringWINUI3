@@ -4,6 +4,7 @@ using System.Linq;
 using HardwareMonitorWinUI3.Core;
 using HardwareMonitorWinUI3.UI;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace HardwareMonitorWinUI3.Models
 {
@@ -32,7 +33,7 @@ namespace HardwareMonitorWinUI3.Models
 
         private string _name = string.Empty;
         private bool _isExpanded = true;
-        private Dictionary<string, SensorData>? _sensorCache;
+        private volatile Dictionary<string, SensorData>? _sensorCache;
 
         public HardwareNode()
         {
@@ -61,7 +62,18 @@ namespace HardwareMonitorWinUI3.Models
         public ObservableCollection<HardwareNode> SubHardware { get; } = new();
         public ObservableCollection<SensorGroup> SensorGroups { get; } = new();
 
-        internal Dictionary<string, SensorData> SensorCache => _sensorCache ??= BuildSensorCache();
+internal Dictionary<string, SensorData> SensorCache
+        {
+            get
+            {
+                var cache = _sensorCache;
+                if (cache != null) return cache;
+                
+                var newCache = BuildSensorCache();
+                Interlocked.CompareExchange(ref _sensorCache, newCache, null);
+                return _sensorCache!;
+            }
+        }
 
         private Dictionary<string, SensorData> BuildSensorCache()
         {
@@ -75,13 +87,13 @@ namespace HardwareMonitorWinUI3.Models
 
         internal void InvalidateSensorCache()
         {
-            _sensorCache = null;
+            Interlocked.Exchange(ref _sensorCache, null);
         }
 
         private void OnSensorsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             OnPropertyChanged(nameof(SensorCount));
-            _sensorCache = null;
+            Interlocked.Exchange(ref _sensorCache, null);
         }
 
         public void OrganizeSensorsIntoGroups()
