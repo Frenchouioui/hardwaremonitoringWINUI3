@@ -5,6 +5,7 @@ using HardwareMonitorWinUI3.Core;
 using HardwareMonitorWinUI3.Hardware;
 using HardwareMonitorWinUI3.Models;
 using HardwareMonitorWinUI3.Services;
+using HardwareMonitorWinUI3.Shared;
 using HardwareMonitorWinUI3.UI;
 
 namespace HardwareMonitorWinUI3.Tests;
@@ -13,6 +14,7 @@ public class AppViewModelTests
 {
     private readonly Mock<IHardwareService> _mockService;
     private readonly Mock<ISettingsService> _mockSettingsService;
+    private readonly Mock<ILogger> _mockLogger;
     private readonly AppViewModel _viewModel;
     private readonly ObservableCollection<HardwareNode> _serviceNodes;
 
@@ -20,6 +22,7 @@ public class AppViewModelTests
     {
         _mockService = new Mock<IHardwareService>();
         _mockSettingsService = new Mock<ISettingsService>();
+        _mockLogger = new Mock<ILogger>();
         _serviceNodes = new ObservableCollection<HardwareNode>();
 
         var settings = new AppSettings();
@@ -28,7 +31,7 @@ public class AppViewModelTests
         _mockService.Setup(s => s.CurrentInterval).Returns(UIConstants.UltraInterval);
         _mockService.Setup(s => s.IsInitialized).Returns(true);
 
-        _viewModel = new AppViewModel(_mockService.Object, _mockSettingsService.Object);
+        _viewModel = new AppViewModel(_mockService.Object, _mockSettingsService.Object, _mockLogger.Object);
     }
 
     #region Speed Button State

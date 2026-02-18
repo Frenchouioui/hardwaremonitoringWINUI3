@@ -348,34 +348,40 @@ namespace HardwareMonitorWinUI3.Hardware
             }
         }
 
+        private static readonly string NaString = "N/A";
+
         private static void UpdateNodeSensors(HardwareNode node, IHardware hardware)
         {
             var sensors = hardware.Sensors;
             var cache = node.SensorCache;
-            
+            var naString = NaString;
+
             foreach (var sensor in sensors)
             {
-                var key = $"{sensor.Name}|{sensor.SensorType}";
-                
+                var sensorName = sensor.Name;
+                var sensorType = sensor.SensorType;
+                var key = $"{sensorName}|{sensorType}";
+
                 if (cache.TryGetValue(key, out var sensorData))
                 {
-                    if (sensor.Value.HasValue)
+                    var sensorValue = sensor.Value;
+                    if (sensorValue.HasValue)
                     {
-                        string newFormattedValue = sensor.ToFormattedString();
-                        var rawValue = sensor.Value.Value;
+                        var rawValue = sensorValue.Value;
+                        var newFormattedValue = sensor.ToFormattedString();
 
                         if (sensorData.Value != newFormattedValue)
                         {
                             sensorData.Value = newFormattedValue;
 
-                            string unit = sensor.SensorType.GetSensorUnit();
-                            string precision = sensor.SensorType.GetSensorPrecision();
+                            var unit = sensorType.GetSensorUnit();
+                            var precision = sensorType.GetSensorPrecision();
                             sensorData.UpdateMinMax(rawValue, unit, precision);
                         }
                     }
-                    else if (sensorData.Value != "N/A")
+                    else if (sensorData.Value != naString)
                     {
-                        sensorData.Value = "N/A";
+                        sensorData.Value = naString;
                     }
                 }
             }

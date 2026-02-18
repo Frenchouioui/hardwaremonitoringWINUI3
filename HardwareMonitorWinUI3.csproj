@@ -41,9 +41,10 @@
     <FileVersion>1.0.0.0</FileVersion>
     
     <!-- Platform support -->
+    <!-- ARM64 not supported: LibreHardwareMonitorLib requires x86/x64 kernel drivers -->
     <Platform Condition="'$(Platform)' == ''">x64</Platform>
-    <Platforms>x64;ARM64</Platforms>
-    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     
     <!-- Code quality settings -->
     <Nullable>enable</Nullable>
@@ -81,6 +82,7 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250310001" />
     <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6-pre632" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
   </ItemGroup>
 
   <ItemGroup>

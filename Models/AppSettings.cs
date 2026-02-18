@@ -1,3 +1,5 @@
+using System.Threading;
+
 namespace HardwareMonitorWinUI3.Models
 {
     public enum BackdropStyle
@@ -9,22 +11,70 @@ namespace HardwareMonitorWinUI3.Models
 
     public class AppSettings
     {
-        public int WindowX { get; set; } = -1;
-        public int WindowY { get; set; } = -1;
-        public int WindowWidth { get; set; } = 1200;
-        public int WindowHeight { get; set; } = 800;
-        public bool IsMaximized { get; set; }
+        private readonly object _lock = new();
+        private int _windowX = -1;
+        private int _windowY = -1;
+        private int _windowWidth = 1200;
+        private int _windowHeight = 800;
+        private int _isMaximized;
+        private int _backdropStyle = (int)BackdropStyle.MicaAlt;
+        private int _refreshInterval = 250;
+        private int _showCPU = 1;
+        private int _showGPU = 1;
+        private int _showMotherboard = 1;
+        private int _showStorage = 1;
+        private int _showMemory = 1;
+        private int _showNetwork = 1;
+        private int _showController = 1;
 
-        public BackdropStyle BackdropStyle { get; set; } = BackdropStyle.MicaAlt;
+        public int WindowX { get => _windowX; set => _windowX = value; }
+        public int WindowY { get => _windowY; set => _windowY = value; }
+        public int WindowWidth { get => _windowWidth; set => _windowWidth = value; }
+        public int WindowHeight { get => _windowHeight; set => _windowHeight = value; }
+        public bool IsMaximized { get => Interlocked.CompareExchange(ref _isMaximized, 0, 0) == 1; set => Interlocked.Exchange(ref _isMaximized, value ? 1 : 0); }
 
-        public int RefreshInterval { get; set; } = 250;
+        public BackdropStyle BackdropStyle
+        {
+            get => (BackdropStyle)Interlocked.CompareExchange(ref _backdropStyle, 0, 0);
+            set => Interlocked.Exchange(ref _backdropStyle, (int)value);
+        }
 
-        public bool ShowCPU { get; set; } = true;
-        public bool ShowGPU { get; set; } = true;
-        public bool ShowMotherboard { get; set; } = true;
-        public bool ShowStorage { get; set; } = true;
-        public bool ShowMemory { get; set; } = true;
-        public bool ShowNetwork { get; set; } = true;
-        public bool ShowController { get; set; } = true;
+        public int RefreshInterval
+        {
+            get => Interlocked.CompareExchange(ref _refreshInterval, 0, 0);
+            set => Interlocked.Exchange(ref _refreshInterval, value);
+        }
+
+        public bool ShowCPU { get => Interlocked.CompareExchange(ref _showCPU, 0, 0) == 1; set => Interlocked.Exchange(ref _showCPU, value ? 1 : 0); }
+        public bool ShowGPU { get => Interlocked.CompareExchange(ref _showGPU, 0, 0) == 1; set => Interlocked.Exchange(ref _showGPU, value ? 1 : 0); }
+        public bool ShowMotherboard { get => Interlocked.CompareExchange(ref _showMotherboard, 0, 0) == 1; set => Interlocked.Exchange(ref _showMotherboard, value ? 1 : 0); }
+        public bool ShowStorage { get => Interlocked.CompareExchange(ref _showStorage, 0, 0) == 1; set => Interlocked.Exchange(ref _showStorage, value ? 1 : 0); }
+        public bool ShowMemory { get => Interlocked.CompareExchange(ref _showMemory, 0, 0) == 1; set => Interlocked.Exchange(ref _showMemory, value ? 1 : 0); }
+        public bool ShowNetwork { get => Interlocked.CompareExchange(ref _showNetwork, 0, 0) == 1; set => Interlocked.Exchange(ref _showNetwork, value ? 1 : 0); }
+        public bool ShowController { get => Interlocked.CompareExchange(ref _showController, 0, 0) == 1; set => Interlocked.Exchange(ref _showController, value ? 1 : 0); }
+
+        public AppSettings CreateSnapshot()
+        {
+            lock (_lock)
+            {
+                return new AppSettings
+                {
+                    WindowX = _windowX,
+                    WindowY = _windowY,
+                    WindowWidth = _windowWidth,
+                    WindowHeight = _windowHeight,
+                    IsMaximized = _isMaximized == 1,
+                    BackdropStyle = (BackdropStyle)_backdropStyle,
+                    RefreshInterval = _refreshInterval,
+                    ShowCPU = _showCPU == 1,
+                    ShowGPU = _showGPU == 1,
+                    ShowMotherboard = _showMotherboard == 1,
+                    ShowStorage = _showStorage == 1,
+                    ShowMemory = _showMemory == 1,
+                    ShowNetwork = _showNetwork == 1,
+                    ShowController = _showController == 1
+                };
+            }
+        }
     }
 }

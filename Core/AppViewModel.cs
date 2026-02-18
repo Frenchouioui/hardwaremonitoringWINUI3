@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using HardwareMonitorWinUI3.Models;
 using HardwareMonitorWinUI3.Hardware;
 using HardwareMonitorWinUI3.Services;
@@ -187,10 +188,10 @@ namespace HardwareMonitorWinUI3.Core
 
         #region Commands
 
-        public ICommand ChangeSpeedCommand { get; }
-        public ICommand ResetMinMaxCommand { get; }
-        public ICommand RunDiagnosticCommand { get; }
-        public ICommand ChangeBackdropCommand { get; }
+        public IRelayCommand<object?> ChangeSpeedCommand { get; }
+        public IRelayCommand ResetMinMaxCommand { get; }
+        public IRelayCommand RunDiagnosticCommand { get; }
+        public IRelayCommand<object?> ChangeBackdropCommand { get; }
 
         #endregion
 
@@ -208,10 +209,10 @@ namespace HardwareMonitorWinUI3.Core
             _dispatch = dispatcher ?? (action => { action(); return true; });
             _filteredHardwareNodes = new ObservableCollection<HardwareNode>();
 
-            ChangeSpeedCommand = new RelayCommand<object>(ExecuteChangeSpeed);
+            ChangeSpeedCommand = new RelayCommand<object?>(ExecuteChangeSpeed);
             ResetMinMaxCommand = new RelayCommand(ExecuteResetMinMax);
             RunDiagnosticCommand = new RelayCommand(ExecuteRunDiagnostic);
-            ChangeBackdropCommand = new RelayCommand<object>(ExecuteChangeBackdrop);
+            ChangeBackdropCommand = new RelayCommand<object?>(ExecuteChangeBackdrop);
 
             _hardwareService.TimerTick += OnTimerTick;
             _hardwareService.UpsUpdated += OnUpsUpdated;

@@ -1,4 +1,5 @@
 using HardwareMonitorWinUI3.Models;
+using HardwareMonitorWinUI3.Hardware;
 using HardwareMonitorWinUI3.UI;
 using LibreHardwareMonitor.Hardware;
 using Xunit;
