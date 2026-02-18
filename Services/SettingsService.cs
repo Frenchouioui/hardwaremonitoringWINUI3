@@ -21,12 +21,14 @@ namespace HardwareMonitorWinUI3.Services
             DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
         };
 
+        private readonly ILogger _logger;
         private AppSettings _settings = new();
 
         public AppSettings Settings => _settings;
 
-        public SettingsService()
+        public SettingsService(ILogger logger)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             Load();
         }
 
@@ -53,7 +55,7 @@ namespace HardwareMonitorWinUI3.Services
                     var fileInfo = new FileInfo(SettingsFilePath);
                     if (fileInfo.Length > 1024 * 1024)
                     {
-                        Logger.LogWarning($"Settings file too large ({fileInfo.Length} bytes), using defaults");
+                        _logger.LogWarning($"Settings file too large ({fileInfo.Length} bytes), using defaults");
                         _settings = new AppSettings();
                         return;
                     }
@@ -65,18 +67,18 @@ namespace HardwareMonitorWinUI3.Services
                     {
                         _settings = settings;
                         ValidateSettings();
-                        Logger.LogInfo($"Settings loaded from {SettingsFilePath}");
+                        _logger.LogInfo($"Settings loaded from {SettingsFilePath}");
                         return;
                     }
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to load settings, using defaults", ex);
+                _logger.LogError("Failed to load settings, using defaults", ex);
             }
 
             _settings = new AppSettings();
-            Logger.LogInfo("Using default settings");
+            _logger.LogInfo("Using default settings");
         }
 
         public void Save()
@@ -88,11 +90,11 @@ namespace HardwareMonitorWinUI3.Services
                 var json = JsonSerializer.Serialize(_settings, JsonOptions);
                 File.WriteAllText(SettingsFilePath, json);
 
-                Logger.LogInfo($"Settings saved to {SettingsFilePath}");
+                _logger.LogInfo($"Settings saved to {SettingsFilePath}");
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to save settings", ex);
+                _logger.LogError("Failed to save settings", ex);
             }
         }
 
@@ -100,7 +102,7 @@ namespace HardwareMonitorWinUI3.Services
         {
             _settings = new AppSettings();
             Save();
-            Logger.LogInfo("Settings reset to defaults");
+            _logger.LogInfo("Settings reset to defaults");
         }
     }
 }

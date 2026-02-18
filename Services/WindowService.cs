@@ -10,10 +10,12 @@ namespace HardwareMonitorWinUI3.Services
     public class WindowService : IWindowService
     {
         private readonly ISettingsService _settingsService;
+        private readonly ILogger _logger;
 
-        public WindowService(ISettingsService settingsService)
+        public WindowService(ISettingsService settingsService, ILogger logger)
         {
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void RestoreWindowState(Window window)
@@ -43,11 +45,11 @@ namespace HardwareMonitorWinUI3.Services
                     (appWindow.Presenter as OverlappedPresenter)?.Maximize();
                 }
 
-                Logger.LogInfo("Window state restored");
+                _logger.LogInfo("Window state restored");
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to restore window state", ex);
+                _logger.LogError("Failed to restore window state", ex);
                 CenterWindow(window);
             }
         }
@@ -75,15 +77,15 @@ namespace HardwareMonitorWinUI3.Services
                 settings.IsMaximized = presenter?.State == OverlappedPresenterState.Maximized;
 
                 _settingsService.Save();
-                Logger.LogInfo("Window state saved");
+                _logger.LogInfo("Window state saved");
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to save window state", ex);
+                _logger.LogError("Failed to save window state", ex);
             }
         }
 
-public void CenterWindow(Window window)
+        public void CenterWindow(Window window)
         {
             if (window == null) return;
 
@@ -104,11 +106,11 @@ public void CenterWindow(Window window)
                 int centerY = workArea.Y + (workArea.Height - adaptiveSize.Height) / 2;
 
                 appWindow.Move(new PointInt32(centerX, centerY));
-                Logger.LogInfo("Window centered on screen with adaptive size");
+                _logger.LogInfo("Window centered on screen with adaptive size");
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to center window", ex);
+                _logger.LogError("Failed to center window", ex);
             }
         }
 
@@ -161,9 +163,8 @@ public void CenterWindow(Window window)
                 }
                 return false;
             }
-            catch (Exception ex)
+            catch
             {
-                Logger.LogWarning($"IsPositionOnScreen check failed: {ex.Message}");
                 return true;
             }
         }

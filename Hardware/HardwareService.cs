@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +21,7 @@ namespace HardwareMonitorWinUI3.Hardware
         private UpdateVisitor? _updateVisitor;
         private volatile bool _isInitialized;
         private readonly DispatcherQueue _dispatcherQueue;
+        private readonly ILogger _logger;
         private CancellationTokenSource _cts = new();
 
         private DispatcherTimer? _timer;
@@ -34,6 +34,9 @@ namespace HardwareMonitorWinUI3.Hardware
         private readonly SemaphoreSlim _computerLock = new(1, 1);
         private readonly Dictionary<HardwareNode, IHardware> _hardwareMap = new();
 
+        private int _detectedHardwareCount;
+        private int _detectedStorageCount;
+
         #endregion
 
         #region Properties & Events
@@ -41,38 +44,8 @@ namespace HardwareMonitorWinUI3.Hardware
         public bool IsInitialized => _isInitialized;
         public int CurrentInterval => _currentInterval;
         public int CurrentUps => _currentUps;
-
-        public int DetectedHardwareCount
-        {
-            get
-            {
-                _computerLock.Wait();
-                try
-                {
-                    return _computer?.Hardware.Count() ?? 0;
-                }
-                finally
-                {
-                    _computerLock.Release();
-                }
-            }
-        }
-
-        public int DetectedStorageCount
-        {
-            get
-            {
-                _computerLock.Wait();
-                try
-                {
-                    return _computer?.Hardware.Count(h => h.HardwareType == HardwareType.Storage) ?? 0;
-                }
-                finally
-                {
-                    _computerLock.Release();
-                }
-            }
-        }
+        public int DetectedHardwareCount => _detectedHardwareCount;
+        public int DetectedStorageCount => _detectedStorageCount;
 
         public event EventHandler? TimerTick;
         public event EventHandler<int>? UpsUpdated;
@@ -83,9 +56,10 @@ namespace HardwareMonitorWinUI3.Hardware
 
         #region Constructor
 
-        public HardwareService(DispatcherQueue dispatcherQueue)
+        public HardwareService(DispatcherQueue dispatcherQueue, ILogger logger)
         {
             _dispatcherQueue = dispatcherQueue ?? throw new ArgumentNullException(nameof(dispatcherQueue));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         #endregion
@@ -99,9 +73,9 @@ namespace HardwareMonitorWinUI3.Hardware
             Computer? localComputer = null;
             try
             {
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
-                    Logger.LogInfo("Initializing LibreHardwareMonitor...");
+                    _logger.LogInfo("Initializing LibreHardwareMonitor...");
 
                     localComputer = new Computer
                     {
@@ -116,21 +90,22 @@ namespace HardwareMonitorWinUI3.Hardware
 
                     linked.Token.ThrowIfCancellationRequested();
 
-                    Logger.LogInfo("Opening hardware connection...");
+                    _logger.LogInfo("Opening hardware connection...");
                     localComputer.Open();
 
-                    Logger.LogInfo("Creating update visitor...");
+                    _logger.LogInfo("Creating update visitor...");
                     _updateVisitor = new UpdateVisitor();
 
                     localComputer.Accept(_updateVisitor);
 
-                    DiagnosticHelper.LogHardwareDetection(localComputer);
+                    DiagnosticHelper.LogHardwareDetection(localComputer, _logger);
 
-                    _computerLock.Wait(linked.Token);
+                    await _computerLock.WaitAsync(linked.Token).ConfigureAwait(false);
                     try
                     {
                         _computer = localComputer;
                         localComputer = null;
+                        UpdateCachedCounts();
                     }
                     finally
                     {
@@ -138,27 +113,27 @@ namespace HardwareMonitorWinUI3.Hardware
                     }
 
                     _isInitialized = true;
-                    Logger.LogSuccess("LibreHardwareMonitor initialized successfully");
-                }, linked.Token);
+                    _logger.LogSuccess("LibreHardwareMonitor initialized successfully");
+                }, linked.Token).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
                 localComputer?.Close();
-                Logger.LogWarning("Hardware initialization cancelled");
+                _logger.LogWarning("Hardware initialization cancelled");
                 throw;
             }
             catch (UnauthorizedAccessException ex)
             {
                 localComputer?.Close();
-                Logger.LogError("ADMINISTRATOR RIGHTS ERROR", ex);
-                Logger.LogWarning("The application must be run as administrator");
+                _logger.LogError("ADMINISTRATOR RIGHTS ERROR", ex);
+                _logger.LogWarning("The application must be run as administrator");
                 throw new InvalidOperationException(
                     "LibreHardwareMonitor requires administrator rights. Please restart the application as administrator.", ex);
             }
             catch (Exception ex)
             {
                 localComputer?.Close();
-                Logger.LogCriticalError("INITIALIZATION", ex);
+                _logger.LogCriticalError("INITIALIZATION", ex);
                 throw;
             }
         }
@@ -166,11 +141,11 @@ namespace HardwareMonitorWinUI3.Hardware
         public async Task BuildHardwareStructureAsync(CancellationToken cancellationToken = default)
         {
             List<IHardware> hardwareList;
-            _computerLock.Wait(cancellationToken);
+            await _computerLock.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 if (_computer?.Hardware == null) return;
-                hardwareList = await Task.Run(() => _computer.Hardware.ToList(), cancellationToken);
+                hardwareList = await Task.Run(() => _computer.Hardware.ToList(), cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -186,7 +161,7 @@ namespace HardwareMonitorWinUI3.Hardware
             timeoutCts.Token.Register(() =>
             {
                 tcs.TrySetCanceled(timeoutCts.Token);
-                Logger.LogWarning("BuildHardwareStructureAsync timed out after 5 seconds");
+                _logger.LogWarning("BuildHardwareStructureAsync timed out after 5 seconds");
             });
 
             bool enqueued = _dispatcherQueue.TryEnqueue(() =>
@@ -202,7 +177,7 @@ namespace HardwareMonitorWinUI3.Hardware
 
                     foreach (var hardware in hardwareList)
                     {
-                        DiagnosticHelper.LogStorageDetection(hardware);
+                        DiagnosticHelper.LogStorageDetection(hardware, _logger);
 
                         bool hasDirectSensors = hardware.Sensors?.Any() == true;
                         bool shouldShowMainHardware = hasDirectSensors || hardware.HardwareType != HardwareType.Motherboard;
@@ -259,10 +234,10 @@ namespace HardwareMonitorWinUI3.Hardware
                         }
                     }
 
-                    Logger.LogInfo($"TOTAL NODES ADDED: {HardwareNodes.Count}");
+                    _logger.LogInfo($"TOTAL NODES ADDED: {HardwareNodes.Count}");
                     foreach (var hardwareNode in HardwareNodes)
                     {
-                        Logger.LogInfo($"   - {hardwareNode.Name}");
+                        _logger.LogInfo($"   - {hardwareNode.Name}");
                     }
 
                     tcs.TrySetResult();
@@ -278,14 +253,14 @@ namespace HardwareMonitorWinUI3.Hardware
                 tcs.TrySetException(new InvalidOperationException("Failed to enqueue operation on dispatcher queue"));
             }
 
-            await tcs.Task;
+            await tcs.Task.ConfigureAwait(false);
         }
 
         public async Task UpdateSensorValuesAsync(CancellationToken cancellationToken = default)
         {
             if (!await _updateLock.WaitAsync(0, cancellationToken).ConfigureAwait(false))
             {
-                Logger.LogWarning("Update skipped: lock busy");
+                _logger.LogWarning("Update skipped: lock busy");
                 return;
             }
 
@@ -293,7 +268,7 @@ namespace HardwareMonitorWinUI3.Hardware
             {
                 using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cts.Token);
 
-                _computerLock.Wait(linked.Token);
+                await _computerLock.WaitAsync(linked.Token).ConfigureAwait(false);
                 try
                 {
                     await Task.Run(() =>
@@ -315,7 +290,7 @@ namespace HardwareMonitorWinUI3.Hardware
                 timeoutCts.Token.Register(() =>
                 {
                     tcs.TrySetCanceled(timeoutCts.Token);
-                    Logger.LogWarning("UpdateSensorValuesAsync timed out after 5 seconds");
+                    _logger.LogWarning("UpdateSensorValuesAsync timed out after 5 seconds");
                 });
 
                 bool enqueued = _dispatcherQueue.TryEnqueue(() =>
@@ -406,6 +381,13 @@ namespace HardwareMonitorWinUI3.Hardware
             }
         }
 
+        private void UpdateCachedCounts()
+        {
+            _detectedHardwareCount = _computer?.Hardware.Count() ?? 0;
+            _detectedStorageCount = _computer?.Hardware
+                .Count(h => h.HardwareType == HardwareType.Storage) ?? 0;
+        }
+
         #endregion
 
         #region Timer
@@ -483,9 +465,9 @@ namespace HardwareMonitorWinUI3.Hardware
 
             try
             {
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
-                    _computerLock.Wait(linked.Token);
+                    await _computerLock.WaitAsync(linked.Token).ConfigureAwait(false);
                     try
                     {
                         oldComputer = _computer;
@@ -502,7 +484,7 @@ namespace HardwareMonitorWinUI3.Hardware
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning($"Failed to close old computer: {ex.Message}");
+                        _logger.LogWarning($"Failed to close old computer: {ex.Message}");
                     }
                     oldComputer = null;
 
@@ -531,11 +513,12 @@ namespace HardwareMonitorWinUI3.Hardware
                         }
                     }
 
-                    _computerLock.Wait(linked.Token);
+                    await _computerLock.WaitAsync(linked.Token).ConfigureAwait(false);
                     try
                     {
                         _computer = newComputer;
                         newComputer = null;
+                        UpdateCachedCounts();
                     }
                     finally
                     {
@@ -543,7 +526,7 @@ namespace HardwareMonitorWinUI3.Hardware
                     }
 
                     _isInitialized = true;
-                }, linked.Token);
+                }, linked.Token).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
@@ -553,7 +536,7 @@ namespace HardwareMonitorWinUI3.Hardware
             catch (Exception ex)
             {
                 newComputer?.Close();
-                Logger.LogCriticalError("ForceHardwareRedetectionAsync", ex);
+                _logger.LogCriticalError("ForceHardwareRedetectionAsync", ex);
                 throw;
             }
         }
@@ -566,7 +549,7 @@ namespace HardwareMonitorWinUI3.Hardware
                 if (_computer == null)
                     return "Computer not initialized";
 
-                return DiagnosticHelper.GenerateHardwareDiagnosticReport(_computer);
+                return DiagnosticHelper.GenerateHardwareDiagnosticReport(_computer, _logger);
             }
             finally
             {
@@ -583,11 +566,11 @@ namespace HardwareMonitorWinUI3.Hardware
                 await BuildHardwareStructureAsync(cancellationToken);
 
                 var report = GenerateDiagnosticReport();
-                Logger.LogInfo(report);
+                _logger.LogInfo(report);
             }
             catch (Exception ex)
             {
-                Logger.LogCriticalError("ForceHardwareRedetectionWithUI", ex);
+                _logger.LogCriticalError("ForceHardwareRedetectionWithUI", ex);
                 throw;
             }
             finally

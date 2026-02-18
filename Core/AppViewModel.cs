@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -26,6 +27,7 @@ namespace HardwareMonitorWinUI3.Core
 
         private readonly IHardwareService _hardwareService;
         private readonly ISettingsService _settingsService;
+        private readonly ILogger _logger;
         private readonly Func<Action, bool> _dispatch;
         private CancellationTokenSource _cts = new();
 
@@ -33,7 +35,6 @@ namespace HardwareMonitorWinUI3.Core
         private string _upsIndicator = string.Empty;
         private string _backdropIndicator = "\u2022 Mica Alt";
         private bool _isUIBusy;
-        private int _isUpdating;
 
         private bool _showCPU = true;
         private bool _showGPU = true;
@@ -75,7 +76,7 @@ namespace HardwareMonitorWinUI3.Core
 
             if (!dispatched)
             {
-                Logger.LogWarning("Failed to dispatch UpdateFilteredHardwareNodes");
+                _logger.LogWarning("Failed to dispatch UpdateFilteredHardwareNodes");
             }
         }
 
@@ -121,99 +122,52 @@ namespace HardwareMonitorWinUI3.Core
         public bool ShowCPU
         {
             get => _showCPU;
-            set
-            {
-                if (SetProperty(ref _showCPU, value))
-                {
-                    _settingsService.Settings.ShowCPU = value;
-                    ScheduleSave();
-                    UpdateFilteredHardwareNodes();
-                }
-            }
+            set => SetFilterProperty(ref _showCPU, value, (s, v) => s.ShowCPU = v);
         }
 
         public bool ShowGPU
         {
             get => _showGPU;
-            set
-            {
-                if (SetProperty(ref _showGPU, value))
-                {
-                    _settingsService.Settings.ShowGPU = value;
-                    ScheduleSave();
-                    UpdateFilteredHardwareNodes();
-                }
-            }
+            set => SetFilterProperty(ref _showGPU, value, (s, v) => s.ShowGPU = v);
         }
 
         public bool ShowMotherboard
         {
             get => _showMotherboard;
-            set
-            {
-                if (SetProperty(ref _showMotherboard, value))
-                {
-                    _settingsService.Settings.ShowMotherboard = value;
-                    ScheduleSave();
-                    UpdateFilteredHardwareNodes();
-                }
-            }
+            set => SetFilterProperty(ref _showMotherboard, value, (s, v) => s.ShowMotherboard = v);
         }
 
         public bool ShowStorage
         {
             get => _showStorage;
-            set
-            {
-                if (SetProperty(ref _showStorage, value))
-                {
-                    _settingsService.Settings.ShowStorage = value;
-                    ScheduleSave();
-                    UpdateFilteredHardwareNodes();
-                }
-            }
+            set => SetFilterProperty(ref _showStorage, value, (s, v) => s.ShowStorage = v);
         }
 
         public bool ShowMemory
         {
             get => _showMemory;
-            set
-            {
-                if (SetProperty(ref _showMemory, value))
-                {
-                    _settingsService.Settings.ShowMemory = value;
-                    ScheduleSave();
-                    UpdateFilteredHardwareNodes();
-                }
-            }
+            set => SetFilterProperty(ref _showMemory, value, (s, v) => s.ShowMemory = v);
         }
 
         public bool ShowNetwork
         {
             get => _showNetwork;
-            set
-            {
-                if (SetProperty(ref _showNetwork, value))
-                {
-                    _settingsService.Settings.ShowNetwork = value;
-                    ScheduleSave();
-                    UpdateFilteredHardwareNodes();
-                }
-            }
+            set => SetFilterProperty(ref _showNetwork, value, (s, v) => s.ShowNetwork = v);
         }
 
         public bool ShowController
         {
             get => _showController;
-            set
-            {
-                if (SetProperty(ref _showController, value))
-                {
-                    _settingsService.Settings.ShowController = value;
-                    ScheduleSave();
-                    UpdateFilteredHardwareNodes();
-                }
-            }
+            set => SetFilterProperty(ref _showController, value, (s, v) => s.ShowController = v);
+        }
+
+        private bool SetFilterProperty(ref bool field, bool value, Action<AppSettings, bool> settingsSetter, [CallerMemberName] string? name = null)
+        {
+            if (!SetProperty(ref field, value, name)) return false;
+            settingsSetter(_settingsService.Settings, value);
+            ScheduleSave();
+            UpdateFilteredHardwareNodes();
+            return true;
         }
 
         public bool IsInitialized => _hardwareService.IsInitialized;
@@ -245,10 +199,12 @@ namespace HardwareMonitorWinUI3.Core
         public AppViewModel(
             IHardwareService hardwareService,
             ISettingsService settingsService,
+            ILogger logger,
             Func<Action, bool>? dispatcher = null)
         {
             _hardwareService = hardwareService ?? throw new ArgumentNullException(nameof(hardwareService));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dispatch = dispatcher ?? (action => { action(); return true; });
             _filteredHardwareNodes = new ObservableCollection<HardwareNode>();
 
@@ -264,7 +220,7 @@ namespace HardwareMonitorWinUI3.Core
             LoadSettings();
 
             _upsIndicator = UIConstants.GetInitialUpsIndicator(_settingsService.Settings.RefreshInterval);
-            Logger.LogInfo($"Configuration loaded - Default interval: {_settingsService.Settings.RefreshInterval}ms");
+            _logger.LogInfo($"Configuration loaded - Default interval: {_settingsService.Settings.RefreshInterval}ms");
         }
 
         private void LoadSettings()
@@ -352,12 +308,12 @@ namespace HardwareMonitorWinUI3.Core
             }
             catch (OperationCanceledException)
             {
-                Logger.LogWarning("Initialization cancelled");
+                _logger.LogWarning("Initialization cancelled");
             }
             catch (Exception ex)
             {
                 SystemStatusText = UIConstants.GetErrorMessage(ex.Message);
-                Logger.LogCriticalError("INITIALIZATION", ex);
+                _logger.LogCriticalError("INITIALIZATION", ex);
                 throw;
             }
             finally
@@ -434,7 +390,7 @@ namespace HardwareMonitorWinUI3.Core
                 }
             }
 
-            Logger.LogSuccess("Min/Max values reset");
+            _logger.LogSuccess("Min/Max values reset");
         }
 
         public async Task RunHardwareDiagnosticAsync()
@@ -455,12 +411,12 @@ namespace HardwareMonitorWinUI3.Core
             }
             catch (OperationCanceledException)
             {
-                Logger.LogWarning("Diagnostic cancelled");
+                _logger.LogWarning("Diagnostic cancelled");
             }
             catch (Exception ex)
             {
                 SystemStatusText = UIConstants.GetDiagnosticErrorMessage(ex.Message);
-                Logger.LogError("Error during diagnostic", ex);
+                _logger.LogError("Error during diagnostic", ex);
             }
         }
 
@@ -478,8 +434,6 @@ namespace HardwareMonitorWinUI3.Core
         {
             if (_isUIBusy || !IsInitialized) return;
 
-            if (Interlocked.CompareExchange(ref _isUpdating, 1, 0) != 0) return;
-
             try
             {
                 await _hardwareService.UpdateSensorValuesAsync(_cts.Token);
@@ -489,13 +443,9 @@ namespace HardwareMonitorWinUI3.Core
             }
             catch (Exception ex)
             {
-                Logger.LogCriticalError("OnTimerTick", ex);
+                _logger.LogCriticalError("OnTimerTick", ex);
                 _hardwareService.StopTimer();
                 SystemStatusText = "\u274c Monitoring stopped due to critical error";
-            }
-            finally
-            {
-                Interlocked.Exchange(ref _isUpdating, 0);
             }
         }
 

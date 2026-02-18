@@ -28,13 +28,15 @@ namespace HardwareMonitorWinUI3
 
             _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
             services.AddSingleton(_dispatcherQueue);
+            services.AddSingleton<ILogger, FileLogger>();
             services.AddSingleton<ISettingsService, SettingsService>();
             services.AddSingleton<IWindowService, WindowService>();
             services.AddSingleton<IHardwareService, HardwareService>();
-            services.AddTransient<AppViewModel>(sp =>
+            services.AddSingleton<AppViewModel>(sp =>
                 new AppViewModel(
                     sp.GetRequiredService<IHardwareService>(),
                     sp.GetRequiredService<ISettingsService>(),
+                    sp.GetRequiredService<ILogger>(),
                     action =>
                     {
                         if (_dispatcherQueue == null) return false;
@@ -45,9 +47,10 @@ namespace HardwareMonitorWinUI3
 
             var settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
             var windowService = _serviceProvider.GetRequiredService<IWindowService>();
+            var logger = _serviceProvider.GetRequiredService<ILogger>();
             var viewModel = _serviceProvider.GetRequiredService<AppViewModel>();
 
-            _window = new MainWindow(viewModel, windowService, settingsService);
+            _window = new MainWindow(viewModel, windowService, settingsService, logger);
             _window.Closed += OnWindowClosed;
 
             windowService.RestoreWindowState(_window);
@@ -67,7 +70,11 @@ namespace HardwareMonitorWinUI3
 
         private void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
         {
-            Logger.LogCriticalError("Unhandled exception", e.Exception);
+            if (_serviceProvider != null)
+            {
+                var logger = _serviceProvider.GetService<ILogger>();
+                logger?.LogCriticalError("Unhandled exception", e.Exception);
+            }
             e.Handled = true;
             CleanupResources();
             Exit();
@@ -87,12 +94,9 @@ namespace HardwareMonitorWinUI3
                 _serviceProvider?.Dispose();
                 _serviceProvider = null;
                 _dispatcherQueue = null;
-
-                Logger.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Logger.LogError("Error during cleanup", ex);
             }
         }
     }

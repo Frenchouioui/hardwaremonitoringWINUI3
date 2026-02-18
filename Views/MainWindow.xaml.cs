@@ -13,6 +13,7 @@ namespace HardwareMonitorWinUI3.Views
     public sealed partial class MainWindow : Window, IDisposable
     {
         public AppViewModel ViewModel { get; }
+        private readonly ILogger _logger;
         private bool _uiReady;
         private bool _isBackdropChanging;
         private bool _disposed;
@@ -20,9 +21,11 @@ namespace HardwareMonitorWinUI3.Views
         public MainWindow(
             AppViewModel viewModel,
             IWindowService windowService,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            ILogger logger)
         {
             ViewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             try
             {
@@ -43,14 +46,14 @@ namespace HardwareMonitorWinUI3.Views
             }
             catch (Exception ex)
             {
-                Logger.LogCriticalError("MainWindow constructor", ex);
+                _logger.LogCriticalError("MainWindow constructor", ex);
                 _ = ShowCriticalErrorDialogAsync(ex);
             }
         }
 
         private async Task ShowCriticalErrorDialogAsync(Exception ex)
         {
-            await UIExtensions.ShowCriticalErrorDialog(ex, Content?.XamlRoot);
+            await UIExtensions.ShowCriticalErrorDialog(ex, Content?.XamlRoot, _logger);
         }
 
         private void SafeApplyBackdrop(int backdropIndex)
@@ -61,7 +64,7 @@ namespace HardwareMonitorWinUI3.Views
             }
             catch (Exception ex)
             {
-                Logger.LogWarning($"Failed to apply backdrop {backdropIndex}: {ex.Message}");
+                _logger.LogWarning($"Failed to apply backdrop {backdropIndex}: {ex.Message}");
             }
         }
 
@@ -73,7 +76,7 @@ namespace HardwareMonitorWinUI3.Views
             }
             catch (Exception ex)
             {
-                Logger.LogCriticalError("Hardware initialization", ex);
+                _logger.LogCriticalError("Hardware initialization", ex);
                 ViewModel.SystemStatusText = UIConstants.GetErrorMessage(ex.Message);
             }
         }

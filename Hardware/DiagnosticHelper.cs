@@ -2,14 +2,14 @@ using System;
 using System.Linq;
 using System.Text;
 using LibreHardwareMonitor.Hardware;
-using HardwareMonitorWinUI3.UI;
+using HardwareMonitorWinUI3.Hardware;
 using HardwareMonitorWinUI3.Shared;
 
 namespace HardwareMonitorWinUI3.Hardware
 {
     public static class DiagnosticHelper
     {
-        public static bool CheckAdministratorRights()
+        public static bool CheckAdministratorRights(ILogger? logger = null)
         {
             try
             {
@@ -19,19 +19,19 @@ namespace HardwareMonitorWinUI3.Hardware
             }
             catch (Exception ex)
             {
-                Logger.LogError("Error checking administrator rights", ex);
+                logger?.LogError("Error checking administrator rights", ex);
                 return false;
             }
         }
 
-        public static string GenerateHardwareDiagnosticReport(Computer? computer)
+        public static string GenerateHardwareDiagnosticReport(Computer? computer, ILogger? logger = null)
         {
             var report = new StringBuilder();
             report.AppendLine("FULL HARDWARE DIAGNOSTIC");
             report.AppendLine("================================");
             report.AppendLine();
 
-            bool isAdmin = CheckAdministratorRights();
+            bool isAdmin = CheckAdministratorRights(logger);
             report.AppendLine($"Administrator Rights: {(isAdmin ? "YES" : "NO")}");
             if (!isAdmin)
             {
@@ -124,57 +124,57 @@ namespace HardwareMonitorWinUI3.Hardware
             report.AppendLine();
         }
 
-        public static void LogHardwareDetection(Computer? computer)
+        public static void LogHardwareDetection(Computer? computer, ILogger logger)
         {
-            Logger.LogInfo("=== FULL HARDWARE DIAGNOSTIC ===");
+            logger.LogInfo("=== FULL HARDWARE DIAGNOSTIC ===");
             if (computer != null)
             {
                 foreach (var hardware in computer.Hardware)
                 {
                     int sensorCount = hardware.Sensors.Count();
                     int subHardwareCount = hardware.SubHardware.Count();
-                    Logger.LogInfo($"Hardware: {hardware.Name} (Type: {hardware.HardwareType})");
-                    Logger.LogInfo($"   - Sensors: {sensorCount}");
-                    Logger.LogInfo($"   - SubHardware: {subHardwareCount}");
+                    logger.LogInfo($"Hardware: {hardware.Name} (Type: {hardware.HardwareType})");
+                    logger.LogInfo($"   - Sensors: {sensorCount}");
+                    logger.LogInfo($"   - SubHardware: {subHardwareCount}");
 
                     foreach (var sensor in hardware.Sensors)
                     {
-                        Logger.LogInfo($"     Sensor: {sensor.Name}: {sensor.Value} ({sensor.SensorType})");
+                        logger.LogInfo($"     Sensor: {sensor.Name}: {sensor.Value} ({sensor.SensorType})");
                     }
 
                     foreach (var subHardware in hardware.SubHardware)
                     {
-                        Logger.LogInfo($"   SubHardware: {subHardware.Name} (Type: {subHardware.HardwareType})");
+                        logger.LogInfo($"   SubHardware: {subHardware.Name} (Type: {subHardware.HardwareType})");
                         foreach (var subSensor in subHardware.Sensors)
                         {
-                            Logger.LogInfo($"       Sensor: {subSensor.Name}: {subSensor.Value} ({subSensor.SensorType})");
+                            logger.LogInfo($"       Sensor: {subSensor.Name}: {subSensor.Value} ({subSensor.SensorType})");
                         }
                     }
                 }
             }
-            Logger.LogInfo("=== END DIAGNOSTIC ===");
+            logger.LogInfo("=== END DIAGNOSTIC ===");
         }
 
-        public static void LogStorageDetection(IHardware hardware)
+        public static void LogStorageDetection(IHardware hardware, ILogger logger)
         {
             if (hardware.HardwareType == HardwareType.Storage)
             {
                 int sensorCount = hardware.Sensors.Count();
                 int subHardwareCount = hardware.SubHardware.Count();
-                Logger.LogInfo($"STORAGE DETECTED: {hardware.Name}");
-                Logger.LogInfo($"   - Sensor count: {sensorCount}");
-                Logger.LogInfo($"   - Sub-hardware count: {subHardwareCount}");
-                Logger.LogInfo($"   - Identifier: {hardware.Identifier}");
+                logger.LogInfo($"STORAGE DETECTED: {hardware.Name}");
+                logger.LogInfo($"   - Sensor count: {sensorCount}");
+                logger.LogInfo($"   - Sub-hardware count: {subHardwareCount}");
+                logger.LogInfo($"   - Identifier: {hardware.Identifier}");
 
                 foreach (var sensor in hardware.Sensors)
                 {
-                    Logger.LogInfo($"     Sensor: {sensor.Name} = {sensor.Value} ({sensor.SensorType})");
+                    logger.LogInfo($"     Sensor: {sensor.Name} = {sensor.Value} ({sensor.SensorType})");
                 }
 
                 foreach (var sub in hardware.SubHardware)
                 {
                     int subSensorCount = sub.Sensors.Count();
-                    Logger.LogInfo($"     Sub-hardware: {sub.Name} with {subSensorCount} sensors");
+                    logger.LogInfo($"     Sub-hardware: {sub.Name} with {subSensorCount} sensors");
                 }
             }
         }
