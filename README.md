@@ -3,10 +3,10 @@
 [![Build](https://github.com/Frenchouioui/hardwaremonitoringWINUI3/actions/workflows/build.yml/badge.svg)](https://github.com/Frenchouioui/hardwaremonitoringWINUI3/actions/workflows/build.yml)
 [![License](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D4.svg)](https://www.microsoft.com/en-us/windows/)
-[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
-[![WinUI 3](https://img.shields.io/badge/WinUI%203-1.7-0078D4.svg)](https://docs.microsoft.com/windows/apps/winui/winui3/)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
+[![WinUI 3](https://img.shields.io/badge/WinUI%203-1.8-0078D4.svg)](https://docs.microsoft.com/windows/apps/winui/winui3/)
 
-A modern hardware monitoring application built with **WinUI 3** and **.NET 8**, featuring real-time sensor tracking with a clean, native Windows 11 interface.
+A modern hardware monitoring application built with **WinUI 3** and **.NET 10**, featuring real-time sensor tracking with a clean, native Windows 11 interface.
 
 ![Hardware Monitor Screenshot](Assets/HardwareMonitorWinUI3_LKb2Hf9uIw.gif)
 
@@ -38,7 +38,7 @@ Get the latest [release](https://github.com/Frenchouioui/hardwaremonitoringWINUI
 ## Requirements
 
 - **Windows 11** (Windows 10 19041+ supported)
-- **.NET 8.0 Desktop Runtime** - [Download](https://dotnet.microsoft.com/download/dotnet/8.0)
+- **.NET 10.0 Desktop Runtime** - [Download](https://dotnet.microsoft.com/download/dotnet/10.0)
 - **PawnIO Driver** - [Download](https://github.com/namazso/PawnIO.Setup/releases/download/2.0.1/PawnIO_setup.exe)
 - **Administrator Rights** - Required for hardware sensor access
 
@@ -60,7 +60,7 @@ Get the latest [release](https://github.com/Frenchouioui/hardwaremonitoringWINUI
 
 - Visual Studio 2022 17.8+ with:
   - .NET Desktop Development workload
-  - Windows App SDK 1.7
+  - Windows App SDK 1.8
 
 ### Build
 
@@ -80,7 +80,7 @@ dotnet build HardwareMonitorWinUI3.csproj -c Release
 
 ### Application crashes on startup
 
-1. Verify .NET 8.0 Runtime is installed
+1. Verify .NET 10.0 Runtime is installed
 2. Check logs in `%LOCALAPPDATA%\HardwareMonitorWinUI3\Logs`
 3. Run Windows App SDK repair
 
