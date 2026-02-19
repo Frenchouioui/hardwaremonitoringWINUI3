@@ -13,7 +13,7 @@
   - ImplicitUsings: enable (automatic imports)
 
   Main dependencies:
-  - LibreHardwareMonitorLib 0.9.6-pre632 (hardware monitoring)
+  - LibreHardwareMonitorLib 0.9.7-pre639 (hardware monitoring)
   - Microsoft.WindowsAppSDK 1.7.250310001 (WinUI 3 framework)
 
   Architecture: MVVM with clear separation of concerns
@@ -80,7 +80,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250310001" />
-    <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6-pre632" />
+    <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.7-pre639" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
   </ItemGroup>
