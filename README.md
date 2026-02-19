@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D4.svg)](https://www.microsoft.com/en-us/windows/)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
-[![WinUI 3](https://img.shields.io/badge/WinUI%203-1.8-0078D4.svg)](https://docs.microsoft.com/windows/apps/winui/winui3/)
+[![WinUI 3](https://img.shields.io/badge/WinUI%203-1.7-0078D4.svg)](https://docs.microsoft.com/windows/apps/winui/winui3/)
 
 A modern hardware monitoring application built with **WinUI 3** and **.NET 10**, featuring real-time sensor tracking with a clean, native Windows 11 interface.
 
@@ -60,7 +60,7 @@ Get the latest [release](https://github.com/Frenchouioui/hardwaremonitoringWINUI
 
 - Visual Studio 2022 17.8+ with:
   - .NET Desktop Development workload
-  - Windows App SDK 1.8
+  - Windows App SDK 1.7
 
 ### Build
 
