@@ -14,7 +14,7 @@
 
   Main dependencies:
   - LibreHardwareMonitorLib 0.9.7-pre639 (hardware monitoring)
-  - Microsoft.WindowsAppSDK 1.8.250907003 (WinUI 3 framework)
+  - Microsoft.WindowsAppSDK 1.8.260209005 (WinUI 3 framework)
 
   Architecture: MVVM with clear separation of concerns
   - Models: Data and business logic
@@ -79,7 +79,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.250907003" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260209005" />
     <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.7-pre639" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
