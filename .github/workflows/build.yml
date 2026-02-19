@@ -21,7 +21,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: '10.0.x'
 
     - name: Cache NuGet packages
       uses: actions/cache@v4
@@ -44,7 +44,7 @@ jobs:
     - name: Create ZIP artifact
       shell: pwsh
       run: |
-        $sourcePath = "bin/Release/net8.0-windows10.0.19041.0/win-x64/"
+        $sourcePath = "bin/Release/net10.0-windows10.0.19041.0/win-x64/"
         $zipPath = "HardwareMonitorWinUI3.zip"
         Compress-Archive -Path "$sourcePath/*" -DestinationPath $zipPath -Force
         Write-Host "Created ZIP: $(Get-ChildItem $zipPath | Select-Object -ExpandProperty FullName)"
