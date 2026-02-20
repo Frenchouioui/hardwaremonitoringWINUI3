@@ -97,3 +97,6 @@ Desktop.ini
 
 # Tool config
 .claude/
+
+# Windows special files
+nul

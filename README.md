@@ -12,11 +12,14 @@ A modern hardware monitoring application built with **WinUI 3** and **.NET 10**,
 
 ## Features
 
-- **Real-time Monitoring** - Track CPU, GPU, Motherboard, Storage, Memory, Network, and Controllers
+- **Real-time Monitoring** - Track CPU, GPU, Motherboard, Storage, Memory, Network, Controllers, Battery, and PSU
+- **Dual View Modes** - Switch between Cards view and compact Tree view
 - **Modern UI** - Native Windows 11 design with Mica/Acrylic backdrop support
 - **Adjustable Refresh Rate** - Ultra (250ms), Fast (500ms), Normal (1000ms)
 - **Min/Max Tracking** - Monitor sensor value ranges with reset capability
 - **Hardware Filtering** - Toggle visibility per hardware category
+- **Temperature Unit** - Toggle between Celsius and Fahrenheit
+- **State Persistence** - Expand/collapse states saved across sessions
 - **Diagnostic Mode** - Force hardware re-detection for troubleshooting
 
 ## Supported Hardware
@@ -30,6 +33,8 @@ A modern hardware monitoring application built with **WinUI 3** and **.NET 10**,
 | **Memory** | RAM modules with SPD |
 | **Network** | Ethernet, Wi-Fi adapters |
 | **Controllers** | SuperIO, Embedded Controllers |
+| **Battery** | Laptop batteries |
+| **PSU** | Corsair, MSI power supplies |
 
 ## Download
 
@@ -47,11 +52,13 @@ Get the latest [release](https://github.com/Frenchouioui/hardwaremonitoringWINUI
 ```
 📁 Core/                    → ViewModels and base classes
 📁 Hardware/                → Hardware monitoring services (LibreHardwareMonitor)
-📁 Models/                  → Data models (HardwareNode, SensorData, AppSettings)
+📁 Models/                  → Data models (HardwareNode, SensorData, SensorGroup, AppSettings)
 📁 Services/                → Settings persistence, Window state management
-📁 UI/                      → Converters, Commands, Extensions
+📁 UI/                      → Converters, Constants, Extensions
 📁 Views/                   → MainWindow.xaml
 📁 Shared/                  → Logger
+📁 Assets/                  → App icons and images
+📁 .github/workflows/       → GitHub Actions CI/CD
 ```
 
 ## Development
