@@ -20,6 +20,13 @@ namespace HardwareMonitorWinUI3.Models
         private string? _cachedSensorCategory;
         private string? _cachedCategoryIcon;
         private string? _sensorNameForThroughput;
+        private float? _rawValue;
+
+        internal float? RawValue
+        {
+            get => _rawValue;
+            set => _rawValue = value;
+        }
 
         #endregion
 

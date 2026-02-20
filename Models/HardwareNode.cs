@@ -153,6 +153,7 @@ namespace HardwareMonitorWinUI3.Models
             
             foreach (var group in SensorGroups)
             {
+                group.ExpansionStateChanged -= OnSensorGroupExpansionChanged;
                 group.Dispose();
             }
             

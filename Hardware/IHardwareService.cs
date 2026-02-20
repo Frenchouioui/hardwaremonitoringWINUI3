@@ -24,7 +24,7 @@ namespace HardwareMonitorWinUI3.Hardware
         Task BuildHardwareStructureAsync(CancellationToken cancellationToken = default);
         Task UpdateSensorValuesAsync(CancellationToken cancellationToken = default);
         Task ForceHardwareRedetectionWithUIAsync(CancellationToken cancellationToken = default);
-        string GenerateDiagnosticReport();
+        Task<string> GenerateDiagnosticReportAsync();
 
         void StartTimer();
         void StopTimer();

@@ -6,7 +6,13 @@ namespace HardwareMonitorWinUI3.Hardware
 {
     public static class SensorExtensions
     {
-        public static TemperatureUnit CurrentTemperatureUnit { get; set; } = TemperatureUnit.Celsius;
+        private static int _currentTemperatureUnit = (int)TemperatureUnit.Celsius;
+
+        public static TemperatureUnit CurrentTemperatureUnit
+        {
+            get => (TemperatureUnit)Interlocked.CompareExchange(ref _currentTemperatureUnit, 0, 0);
+            set => Interlocked.Exchange(ref _currentTemperatureUnit, (int)value);
+        }
 
         public static string GetSensorUnit(this SensorType type) => type switch
         {

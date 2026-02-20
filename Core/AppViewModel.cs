@@ -61,8 +61,13 @@ namespace HardwareMonitorWinUI3.Core
 
         private void UpdateFilteredHardwareNodes()
         {
-            var desired = new HashSet<HardwareNode>(
-                _hardwareService.HardwareNodes.Where(ShouldShowHardwareNode));
+            HardwareNode[] nodesSnapshot;
+            lock (_saveLock)
+            {
+                nodesSnapshot = _hardwareService.HardwareNodes.ToArray();
+            }
+
+            var desired = new HashSet<HardwareNode>(nodesSnapshot.Where(ShouldShowHardwareNode));
 
             bool dispatched = _dispatch(() =>
             {
@@ -72,7 +77,7 @@ namespace HardwareMonitorWinUI3.Core
                         _filteredHardwareNodes.RemoveAt(i);
                 }
 
-                foreach (var node in _hardwareService.HardwareNodes)
+                foreach (var node in nodesSnapshot)
                 {
                     if (desired.Contains(node) && !_filteredHardwareNodes.Contains(node))
                         _filteredHardwareNodes.Add(node);
@@ -619,12 +624,19 @@ namespace HardwareMonitorWinUI3.Core
 
         protected override void DisposeManaged()
         {
+            try
+            {
+                _settingsService.Save();
+            }
+            catch { }
+
             _cts.Cancel();
             _cts.Dispose();
 
             _hardwareService.TimerTick -= OnTimerTick;
             _hardwareService.UpsUpdated -= OnUpsUpdated;
             _hardwareService.HardwareNodes.CollectionChanged -= OnHardwareNodesChanged;
+            _hardwareService.ExpansionStateChanged -= OnExpansionStateChanged;
         }
 
         #endregion

@@ -10,9 +10,6 @@ namespace HardwareMonitorWinUI3.Shared
 {
     public sealed class FileLogger : ILogger, IDisposable
     {
-        private static readonly Lazy<FileLogger> _instance = new(() => new FileLogger());
-        public static FileLogger Instance => _instance.Value;
-
         private readonly string _logDirectory;
         private readonly object _lock = new();
         private StreamWriter? _writer;

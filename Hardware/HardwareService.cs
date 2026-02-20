@@ -373,10 +373,12 @@ namespace HardwareMonitorWinUI3.Hardware
                     if (sensorValue.HasValue)
                     {
                         var rawValue = sensorValue.Value;
-                        var newFormattedValue = sensor.ToFormattedString();
 
-                        if (sensorData.Value != newFormattedValue)
+                        if (!sensorData.RawValue.HasValue || 
+                            Math.Abs(sensorData.RawValue.Value - rawValue) > 0.001f)
                         {
+                            sensorData.RawValue = rawValue;
+                            var newFormattedValue = sensor.ToFormattedString();
                             sensorData.Value = newFormattedValue;
 
                             if (sensorType == SensorType.Throughput)
@@ -402,6 +404,7 @@ namespace HardwareMonitorWinUI3.Hardware
                     else if (sensorData.Value != naString)
                     {
                         sensorData.Value = naString;
+                        sensorData.RawValue = null;
                     }
                 }
             }
@@ -572,15 +575,17 @@ namespace HardwareMonitorWinUI3.Hardware
             }
         }
 
-        public string GenerateDiagnosticReport()
+        public async Task<string> GenerateDiagnosticReportAsync()
         {
-            _computerLock.Wait();
+            await _computerLock.WaitAsync().ConfigureAwait(false);
             try
             {
                 if (_computer == null)
                     return "Computer not initialized";
 
-                return DiagnosticHelper.GenerateHardwareDiagnosticReport(_computer, _logger);
+                return await Task.Run(() => 
+                    DiagnosticHelper.GenerateHardwareDiagnosticReport(_computer, _logger))
+                    .ConfigureAwait(false);
             }
             finally
             {
@@ -596,7 +601,7 @@ namespace HardwareMonitorWinUI3.Hardware
                 await ForceHardwareRedetectionAsync(cancellationToken);
                 await BuildHardwareStructureAsync(cancellationToken);
 
-                var report = GenerateDiagnosticReport();
+                var report = await GenerateDiagnosticReportAsync();
                 _logger.LogInfo(report);
             }
             catch (Exception ex)
@@ -644,6 +649,7 @@ namespace HardwareMonitorWinUI3.Hardware
 
                 foreach (var node in HardwareNodes)
                 {
+                    node.ExpansionStateChanged -= OnHardwareNodeExpansionChanged;
                     node.Dispose();
                 }
                 HardwareNodes.Clear();
