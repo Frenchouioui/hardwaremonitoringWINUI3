@@ -327,64 +327,60 @@
                                 <MenuFlyoutSubItem.Icon>
                                     <FontIcon Glyph="&#xE945;"/>
                                 </MenuFlyoutSubItem.Icon>
-                                <ToggleMenuFlyoutItem Text="Ultra (250ms)" 
-                                                      IsChecked="{x:Bind ViewModel.IsUltraActive, Mode=OneWay}"
-                                                      Command="{x:Bind ViewModel.ChangeSpeedCommand}"
-                                                      CommandParameter="250"/>
-                                <ToggleMenuFlyoutItem Text="Fast (500ms)" 
-                                                      IsChecked="{x:Bind ViewModel.IsFastActive, Mode=OneWay}"
-                                                      Command="{x:Bind ViewModel.ChangeSpeedCommand}"
-                                                      CommandParameter="500"/>
-                                <ToggleMenuFlyoutItem Text="Normal (1000ms)" 
-                                                      IsChecked="{x:Bind ViewModel.IsNormalActive, Mode=OneWay}"
-                                                      Command="{x:Bind ViewModel.ChangeSpeedCommand}"
-                                                      CommandParameter="1000"/>
+                                <RadioMenuFlyoutItem Text="Ultra (250ms)" 
+                                                     IsChecked="{x:Bind ViewModel.IsUltraActive, Mode=OneWay}"
+                                                     Command="{x:Bind ViewModel.ChangeSpeedCommand}"
+                                                     CommandParameter="250"
+                                                     GroupName="RefreshSpeed"/>
+                                <RadioMenuFlyoutItem Text="Fast (500ms)" 
+                                                     IsChecked="{x:Bind ViewModel.IsFastActive, Mode=OneWay}"
+                                                     Command="{x:Bind ViewModel.ChangeSpeedCommand}"
+                                                     CommandParameter="500"
+                                                     GroupName="RefreshSpeed"/>
+                                <RadioMenuFlyoutItem Text="Normal (1000ms)" 
+                                                     IsChecked="{x:Bind ViewModel.IsNormalActive, Mode=OneWay}"
+                                                     Command="{x:Bind ViewModel.ChangeSpeedCommand}"
+                                                     CommandParameter="1000"
+                                                     GroupName="RefreshSpeed"/>
                             </MenuFlyoutSubItem>
                             
                             <MenuFlyoutSubItem Text="Backdrop Style">
                                 <MenuFlyoutSubItem.Icon>
                                     <FontIcon Glyph="&#xE7F4;"/>
                                 </MenuFlyoutSubItem.Icon>
-                                <ToggleMenuFlyoutItem Text="Acrylic" 
-                                                      IsChecked="{x:Bind ViewModel.IsBackdropAcrylic, Mode=OneWay}"
-                                                      Command="{x:Bind ViewModel.ChangeBackdropCommand}"
-                                                      CommandParameter="0"/>
-                                <ToggleMenuFlyoutItem Text="Mica" 
-                                                      IsChecked="{x:Bind ViewModel.IsBackdropMica, Mode=OneWay}"
-                                                      Command="{x:Bind ViewModel.ChangeBackdropCommand}"
-                                                      CommandParameter="1"/>
-                                <ToggleMenuFlyoutItem Text="Mica Alt" 
-                                                      IsChecked="{x:Bind ViewModel.IsBackdropMicaAlt, Mode=OneWay}"
-                                                      Command="{x:Bind ViewModel.ChangeBackdropCommand}"
-                                                      CommandParameter="2"/>
+                                <RadioMenuFlyoutItem Text="Acrylic" 
+                                                     IsChecked="{x:Bind ViewModel.IsBackdropAcrylic, Mode=TwoWay}"
+                                                     GroupName="Backdrop"/>
+                                <RadioMenuFlyoutItem Text="Mica" 
+                                                     IsChecked="{x:Bind ViewModel.IsBackdropMica, Mode=TwoWay}"
+                                                     GroupName="Backdrop"/>
+                                <RadioMenuFlyoutItem Text="Mica Alt" 
+                                                     IsChecked="{x:Bind ViewModel.IsBackdropMicaAlt, Mode=TwoWay}"
+                                                     GroupName="Backdrop"/>
                             </MenuFlyoutSubItem>
                             
                             <MenuFlyoutSubItem Text="View Mode">
                                 <MenuFlyoutSubItem.Icon>
                                     <FontIcon Glyph="&#xE8FD;"/>
                                 </MenuFlyoutSubItem.Icon>
-                                <ToggleMenuFlyoutItem Text="Cards" 
-                                                      IsChecked="{x:Bind ViewModel.IsCardsView, Mode=OneWay}"
-                                                      Command="{x:Bind ViewModel.SetViewModeCommand}"
-                                                      CommandParameter="0"/>
-                                <ToggleMenuFlyoutItem Text="Tree" 
-                                                      IsChecked="{x:Bind ViewModel.IsTreeView, Mode=OneWay}"
-                                                      Command="{x:Bind ViewModel.SetViewModeCommand}"
-                                                      CommandParameter="1"/>
+                                <RadioMenuFlyoutItem Text="Cards" 
+                                                     IsChecked="{x:Bind ViewModel.IsCardsView, Mode=TwoWay}"
+                                                     GroupName="ViewMode"/>
+                                <RadioMenuFlyoutItem Text="Tree" 
+                                                     IsChecked="{x:Bind ViewModel.IsTreeView, Mode=TwoWay}"
+                                                     GroupName="ViewMode"/>
                             </MenuFlyoutSubItem>
                             
                             <MenuFlyoutSubItem Text="Temperature Unit">
                                 <MenuFlyoutSubItem.Icon>
                                     <FontIcon Glyph="&#xE9CA;"/>
                                 </MenuFlyoutSubItem.Icon>
-                                <ToggleMenuFlyoutItem Text="Celsius (°C)" 
-                                                      IsChecked="{x:Bind ViewModel.IsCelsius, Mode=OneWay}"
-                                                      Command="{x:Bind ViewModel.SetTemperatureUnitCommand}"
-                                                      CommandParameter="0"/>
-                                <ToggleMenuFlyoutItem Text="Fahrenheit (°F)" 
-                                                      IsChecked="{x:Bind ViewModel.IsFahrenheit, Mode=OneWay}"
-                                                      Command="{x:Bind ViewModel.SetTemperatureUnitCommand}"
-                                                      CommandParameter="1"/>
+                                <RadioMenuFlyoutItem Text="Celsius (°C)" 
+                                                     IsChecked="{x:Bind ViewModel.IsCelsiusChecked, Mode=TwoWay}"
+                                                     GroupName="Temperature"/>
+                                <RadioMenuFlyoutItem Text="Fahrenheit (°F)" 
+                                                     IsChecked="{x:Bind ViewModel.IsFahrenheitChecked, Mode=TwoWay}"
+                                                     GroupName="Temperature"/>
                             </MenuFlyoutSubItem>
                             
                             <MenuFlyoutSeparator/>

@@ -197,6 +197,8 @@ namespace HardwareMonitorWinUI3.Core
                     ScheduleSave();
                     OnPropertyChanged(nameof(IsCelsius));
                     OnPropertyChanged(nameof(IsFahrenheit));
+                    OnPropertyChanged(nameof(IsCelsiusChecked));
+                    OnPropertyChanged(nameof(IsFahrenheitChecked));
                 }
             }
         }
@@ -234,6 +236,8 @@ namespace HardwareMonitorWinUI3.Core
                 {
                     _settingsService.Settings.ViewMode = value;
                     ScheduleSave();
+                    OnPropertyChanged(nameof(IsCardsView));
+                    OnPropertyChanged(nameof(IsTreeView));
                 }
             }
         }
@@ -330,12 +334,64 @@ namespace HardwareMonitorWinUI3.Core
         public bool IsFastActive => ActiveSpeedButton == SpeedFast;
         public bool IsNormalActive => ActiveSpeedButton == SpeedNormal;
 
-        public bool IsCardsView => CurrentViewMode == ViewMode.Cards;
-        public bool IsTreeView => CurrentViewMode == ViewMode.Tree;
+        public bool IsCardsView
+        {
+            get => CurrentViewMode == ViewMode.Cards;
+            set
+            {
+                if (value) CurrentViewMode = ViewMode.Cards;
+            }
+        }
+        public bool IsTreeView
+        {
+            get => CurrentViewMode == ViewMode.Tree;
+            set
+            {
+                if (value) CurrentViewMode = ViewMode.Tree;
+            }
+        }
 
-        public bool IsBackdropAcrylic => _settingsService.Settings.BackdropStyle == BackdropStyle.Acrylic;
-        public bool IsBackdropMica => _settingsService.Settings.BackdropStyle == BackdropStyle.Mica;
-        public bool IsBackdropMicaAlt => _settingsService.Settings.BackdropStyle == BackdropStyle.MicaAlt;
+        public bool IsBackdropAcrylic
+        {
+            get => _settingsService.Settings.BackdropStyle == BackdropStyle.Acrylic;
+            set
+            {
+                if (value) ExecuteChangeBackdrop(0);
+            }
+        }
+        public bool IsBackdropMica
+        {
+            get => _settingsService.Settings.BackdropStyle == BackdropStyle.Mica;
+            set
+            {
+                if (value) ExecuteChangeBackdrop(1);
+            }
+        }
+        public bool IsBackdropMicaAlt
+        {
+            get => _settingsService.Settings.BackdropStyle == BackdropStyle.MicaAlt;
+            set
+            {
+                if (value) ExecuteChangeBackdrop(2);
+            }
+        }
+
+        public bool IsCelsiusChecked
+        {
+            get => TemperatureUnit == TemperatureUnit.Celsius;
+            set
+            {
+                if (value) TemperatureUnit = TemperatureUnit.Celsius;
+            }
+        }
+        public bool IsFahrenheitChecked
+        {
+            get => TemperatureUnit == TemperatureUnit.Fahrenheit;
+            set
+            {
+                if (value) TemperatureUnit = TemperatureUnit.Fahrenheit;
+            }
+        }
 
         #endregion
 
