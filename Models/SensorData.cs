@@ -10,17 +10,20 @@ namespace HardwareMonitorWinUI3.Models
         private string _name = string.Empty;
         private string _icon = string.Empty;
         private string _value = string.Empty;
-        private string _minValue = "Min: N/A";
-        private string _maxValue = "Max: N/A";
+        private string _minValue = "N/A";
+        private string _maxValue = "N/A";
 
         private float? _minRaw;
         private float? _maxRaw;
+        private float? _minTempCelsius;
+        private float? _maxTempCelsius;
 
         private string _sensorType = string.Empty;
         private string? _cachedSensorCategory;
         private string? _cachedCategoryIcon;
         private string? _sensorNameForThroughput;
         private float? _rawValue;
+        private bool _subscribedToTemperatureChange;
 
         internal float? RawValue
         {
@@ -52,14 +55,61 @@ namespace HardwareMonitorWinUI3.Models
 
         public string MinValue
         {
-            get => _minValue;
+            get
+            {
+                if (_sensorType == "Temperature" && _minTempCelsius.HasValue)
+                {
+                    return FormatTemperature(_minTempCelsius.Value);
+                }
+                return _minValue;
+            }
             set => SetProperty(ref _minValue, value);
         }
 
         public string MaxValue
         {
-            get => _maxValue;
+            get
+            {
+                if (_sensorType == "Temperature" && _maxTempCelsius.HasValue)
+                {
+                    return FormatTemperature(_maxTempCelsius.Value);
+                }
+                return _maxValue;
+            }
             set => SetProperty(ref _maxValue, value);
+        }
+
+        private static string FormatTemperature(float celsius)
+        {
+            if (Hardware.SensorExtensions.CurrentTemperatureUnit == TemperatureUnit.Fahrenheit)
+            {
+                float fahrenheit = celsius * 1.8f + 32f;
+                return $"{fahrenheit:F1} \u00b0F";
+            }
+            return $"{celsius:F1} \u00b0C";
+        }
+
+        private void SubscribeToTemperatureChange()
+        {
+            if (!_subscribedToTemperatureChange)
+            {
+                _subscribedToTemperatureChange = true;
+                Hardware.SensorExtensions.TemperatureUnitChanged += OnTemperatureUnitChanged;
+            }
+        }
+
+        private void OnTemperatureUnitChanged(object? sender, EventArgs e)
+        {
+            if (_sensorType == "Temperature")
+            {
+                OnPropertyChanged(nameof(MinValue));
+                OnPropertyChanged(nameof(MaxValue));
+                
+                if (_rawValue.HasValue)
+                {
+                    Value = FormatTemperature(_rawValue.Value);
+                }
+            }
         }
 
         public string SensorType
@@ -256,35 +306,32 @@ public void UpdateMinMax(float currentValue, string unit, string precision = "F1
         
         public void UpdateMinMaxTemperature(float currentValue)
         {
+            SubscribeToTemperatureChange();
+
             bool minUpdated = false;
             bool maxUpdated = false;
 
-            if (!_minRaw.HasValue || currentValue < _minRaw.Value)
+            if (!_minTempCelsius.HasValue || currentValue < _minTempCelsius.Value)
             {
-                _minRaw = currentValue;
+                _minTempCelsius = currentValue;
                 minUpdated = true;
             }
 
-            if (!_maxRaw.HasValue || currentValue > _maxRaw.Value)
+            if (!_maxTempCelsius.HasValue || currentValue > _maxTempCelsius.Value)
             {
-                _maxRaw = currentValue;
+                _maxTempCelsius = currentValue;
                 maxUpdated = true;
             }
 
-            if (minUpdated || maxUpdated)
+            if (minUpdated)
             {
-                string FormatTemperature(float celsius)
-                {
-                    if (Hardware.SensorExtensions.CurrentTemperatureUnit == TemperatureUnit.Fahrenheit)
-                    {
-                        float fahrenheit = celsius * 1.8f + 32f;
-                        return $"{fahrenheit:F1} \u00b0F";
-                    }
-                    return $"{celsius:F1} \u00b0C";
-                }
-                
-                if (minUpdated) MinValue = $"Min: {FormatTemperature(currentValue)}";
-                if (maxUpdated) MaxValue = $"Max: {FormatTemperature(currentValue)}";
+                _minRaw = currentValue;
+                OnPropertyChanged(nameof(MinValue));
+            }
+            if (maxUpdated)
+            {
+                _maxRaw = currentValue;
+                OnPropertyChanged(nameof(MaxValue));
             }
         }
 
@@ -292,8 +339,12 @@ public void UpdateMinMax(float currentValue, string unit, string precision = "F1
         {
             _minRaw = null;
             _maxRaw = null;
-            MinValue = "Min: N/A";
-            MaxValue = "Max: N/A";
+            _minTempCelsius = null;
+            _maxTempCelsius = null;
+            _minValue = "N/A";
+            _maxValue = "N/A";
+            OnPropertyChanged(nameof(MinValue));
+            OnPropertyChanged(nameof(MaxValue));
         }
 
         #endregion

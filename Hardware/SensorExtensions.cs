@@ -8,10 +8,19 @@ namespace HardwareMonitorWinUI3.Hardware
     {
         private static int _currentTemperatureUnit = (int)TemperatureUnit.Celsius;
 
+        public static event EventHandler? TemperatureUnitChanged;
+
         public static TemperatureUnit CurrentTemperatureUnit
         {
             get => (TemperatureUnit)Interlocked.CompareExchange(ref _currentTemperatureUnit, 0, 0);
-            set => Interlocked.Exchange(ref _currentTemperatureUnit, (int)value);
+            set
+            {
+                var oldValue = Interlocked.CompareExchange(ref _currentTemperatureUnit, 0, 0);
+                if ((int)value != Interlocked.Exchange(ref _currentTemperatureUnit, (int)value))
+                {
+                    TemperatureUnitChanged?.Invoke(null, EventArgs.Empty);
+                }
+            }
         }
 
         public static string GetSensorUnit(this SensorType type) => type switch
