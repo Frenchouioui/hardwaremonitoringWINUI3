@@ -16,6 +16,12 @@ namespace HardwareMonitorWinUI3.Core
 {
     public class AppViewModel : BaseViewModel
     {
+        #region Events
+
+        public event EventHandler<BackdropStyle>? BackdropChanged;
+
+        #endregion
+
         #region Constants
 
         private const string SpeedUltra = "Ultra";
@@ -356,7 +362,16 @@ namespace HardwareMonitorWinUI3.Core
             get => _settingsService.Settings.BackdropStyle == BackdropStyle.Acrylic;
             set
             {
-                if (value) ExecuteChangeBackdrop(0);
+                if (value)
+                {
+                    _settingsService.Settings.BackdropStyle = BackdropStyle.Acrylic;
+                    _settingsService.Save();
+                    SetBackdropIndicator("Acrylic");
+                    BackdropChanged?.Invoke(this, BackdropStyle.Acrylic);
+                    OnPropertyChanged(nameof(IsBackdropAcrylic));
+                    OnPropertyChanged(nameof(IsBackdropMica));
+                    OnPropertyChanged(nameof(IsBackdropMicaAlt));
+                }
             }
         }
         public bool IsBackdropMica
@@ -364,7 +379,16 @@ namespace HardwareMonitorWinUI3.Core
             get => _settingsService.Settings.BackdropStyle == BackdropStyle.Mica;
             set
             {
-                if (value) ExecuteChangeBackdrop(1);
+                if (value)
+                {
+                    _settingsService.Settings.BackdropStyle = BackdropStyle.Mica;
+                    _settingsService.Save();
+                    SetBackdropIndicator("Mica");
+                    BackdropChanged?.Invoke(this, BackdropStyle.Mica);
+                    OnPropertyChanged(nameof(IsBackdropAcrylic));
+                    OnPropertyChanged(nameof(IsBackdropMica));
+                    OnPropertyChanged(nameof(IsBackdropMicaAlt));
+                }
             }
         }
         public bool IsBackdropMicaAlt
@@ -372,7 +396,16 @@ namespace HardwareMonitorWinUI3.Core
             get => _settingsService.Settings.BackdropStyle == BackdropStyle.MicaAlt;
             set
             {
-                if (value) ExecuteChangeBackdrop(2);
+                if (value)
+                {
+                    _settingsService.Settings.BackdropStyle = BackdropStyle.MicaAlt;
+                    _settingsService.Save();
+                    SetBackdropIndicator("Mica Alt");
+                    BackdropChanged?.Invoke(this, BackdropStyle.MicaAlt);
+                    OnPropertyChanged(nameof(IsBackdropAcrylic));
+                    OnPropertyChanged(nameof(IsBackdropMica));
+                    OnPropertyChanged(nameof(IsBackdropMicaAlt));
+                }
             }
         }
 

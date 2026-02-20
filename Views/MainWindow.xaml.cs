@@ -35,6 +35,7 @@ namespace HardwareMonitorWinUI3.Views
                 var backdropIndex = (int)settingsService.Settings.BackdropStyle;
                 SafeApplyBackdrop(backdropIndex);
 
+                ViewModel.BackdropChanged += OnBackdropChanged;
                 ViewModel.NotifySettingsLoaded();
 
                 _ = InitializeHardwareAsync();
@@ -94,6 +95,11 @@ namespace HardwareMonitorWinUI3.Views
             }
         }
 
+        private void OnBackdropChanged(object? sender, BackdropStyle backdropStyle)
+        {
+            SafeApplyBackdrop((int)backdropStyle);
+        }
+
         #endregion
 
         public void Dispose()
@@ -101,6 +107,7 @@ namespace HardwareMonitorWinUI3.Views
             if (!_disposed)
             {
                 _disposed = true;
+                ViewModel.BackdropChanged -= OnBackdropChanged;
                 ViewModel?.Dispose();
             }
         }
