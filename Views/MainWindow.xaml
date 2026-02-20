@@ -120,7 +120,8 @@
                                       Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                                       TextTrimming="CharacterEllipsis"
                                       MaxLines="1"
-                                      VerticalAlignment="Center"/>
+                                      VerticalAlignment="Center"
+                                      ToolTipService.ToolTip="{Binding Name}"/>
                         </StackPanel>
 
                         <TextBlock Grid.Row="1"
@@ -128,16 +129,16 @@
                                    FontSize="18"
                                    FontWeight="Bold"
                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                   Margin="0,2,0,2"/>
+                                   Margin="0,2,0,4"/>
 
-                        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="12" Margin="0,2,0,0">
-                            <TextBlock Text="{Binding MinValue}" FontSize="11"
-                                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                      FontWeight="Medium"/>
-                            <TextBlock Text="{Binding MaxValue}" FontSize="11"
-                                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                      FontWeight="Medium"/>
-                        </StackPanel>
+                        <Grid Grid.Row="2" Margin="0,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding MinValue}" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding MaxValue}" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Right"/>
+                        </Grid>
                     </Grid>
                 </Border>
             </DataTemplate>
@@ -297,10 +298,7 @@
         </Grid>
 
         <!-- Header -->
-        <Border Grid.Row="1"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderThickness="0,0,0,1"
-                BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}">
+        <Border Grid.Row="1">
             <Grid Margin="24,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -313,111 +311,117 @@
                     <TextBlock Text="Hardware Monitor" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <Button x:Name="SettingsButton"
-                        Grid.Column="2"
-                        Style="{StaticResource SpeedButtonStyle}"
-                        CornerRadius="8"
-                        MinWidth="40"
-                        Padding="8,0"
-                        ToolTipService.ToolTip="Settings">
-                    <FontIcon Glyph="&#xE713;" FontSize="18"/>
-                    <Button.Flyout>
-                        <MenuFlyout Placement="BottomEdgeAlignedRight">
-                            <MenuFlyoutSubItem Text="Refresh Speed">
-                                <MenuFlyoutSubItem.Icon>
-                                    <FontIcon Glyph="&#xE945;"/>
-                                </MenuFlyoutSubItem.Icon>
-                                <RadioMenuFlyoutItem Text="Ultra (250ms)" 
-                                                     IsChecked="{x:Bind ViewModel.IsUltraActive, Mode=OneWay}"
-                                                     Command="{x:Bind ViewModel.ChangeSpeedCommand}"
-                                                     CommandParameter="250"
-                                                     GroupName="RefreshSpeed"/>
-                                <RadioMenuFlyoutItem Text="Fast (500ms)" 
-                                                     IsChecked="{x:Bind ViewModel.IsFastActive, Mode=OneWay}"
-                                                     Command="{x:Bind ViewModel.ChangeSpeedCommand}"
-                                                     CommandParameter="500"
-                                                     GroupName="RefreshSpeed"/>
-                                <RadioMenuFlyoutItem Text="Normal (1000ms)" 
-                                                     IsChecked="{x:Bind ViewModel.IsNormalActive, Mode=OneWay}"
-                                                     Command="{x:Bind ViewModel.ChangeSpeedCommand}"
-                                                     CommandParameter="1000"
-                                                     GroupName="RefreshSpeed"/>
-                            </MenuFlyoutSubItem>
-                            
-                            <MenuFlyoutSubItem Text="Backdrop Style">
-                                <MenuFlyoutSubItem.Icon>
-                                    <FontIcon Glyph="&#xE7F4;"/>
-                                </MenuFlyoutSubItem.Icon>
-                                <RadioMenuFlyoutItem Text="Acrylic" 
-                                                     IsChecked="{x:Bind ViewModel.IsBackdropAcrylic, Mode=TwoWay}"
-                                                     GroupName="Backdrop"/>
-                                <RadioMenuFlyoutItem Text="Mica" 
-                                                     IsChecked="{x:Bind ViewModel.IsBackdropMica, Mode=TwoWay}"
-                                                     GroupName="Backdrop"/>
-                                <RadioMenuFlyoutItem Text="Mica Alt" 
-                                                     IsChecked="{x:Bind ViewModel.IsBackdropMicaAlt, Mode=TwoWay}"
-                                                     GroupName="Backdrop"/>
-                            </MenuFlyoutSubItem>
-                            
-                            <MenuFlyoutSubItem Text="View Mode">
-                                <MenuFlyoutSubItem.Icon>
-                                    <FontIcon Glyph="&#xE8FD;"/>
-                                </MenuFlyoutSubItem.Icon>
-                                <RadioMenuFlyoutItem Text="Cards" 
-                                                     IsChecked="{x:Bind ViewModel.IsCardsView, Mode=TwoWay}"
-                                                     GroupName="ViewMode"/>
-                                <RadioMenuFlyoutItem Text="Tree" 
-                                                     IsChecked="{x:Bind ViewModel.IsTreeView, Mode=TwoWay}"
-                                                     GroupName="ViewMode"/>
-                            </MenuFlyoutSubItem>
-                            
-                            <MenuFlyoutSubItem Text="Temperature Unit">
-                                <MenuFlyoutSubItem.Icon>
-                                    <FontIcon Glyph="&#xE9CA;"/>
-                                </MenuFlyoutSubItem.Icon>
-                                <RadioMenuFlyoutItem Text="Celsius (°C)" 
-                                                     IsChecked="{x:Bind ViewModel.IsCelsiusChecked, Mode=TwoWay}"
-                                                     GroupName="Temperature"/>
-                                <RadioMenuFlyoutItem Text="Fahrenheit (°F)" 
-                                                     IsChecked="{x:Bind ViewModel.IsFahrenheitChecked, Mode=TwoWay}"
-                                                     GroupName="Temperature"/>
-                            </MenuFlyoutSubItem>
-                            
-                            <MenuFlyoutSeparator/>
-                            
-                            <MenuFlyoutSubItem Text="Hardware Display">
-                                <MenuFlyoutSubItem.Icon>
-                                    <FontIcon Glyph="&#xE950;"/>
-                                </MenuFlyoutSubItem.Icon>
-                                <ToggleMenuFlyoutItem Text="CPU" IsChecked="{x:Bind ViewModel.ShowCPU, Mode=TwoWay}"/>
-                                <ToggleMenuFlyoutItem Text="GPU" IsChecked="{x:Bind ViewModel.ShowGPU, Mode=TwoWay}"/>
-                                <ToggleMenuFlyoutItem Text="Motherboard" IsChecked="{x:Bind ViewModel.ShowMotherboard, Mode=TwoWay}"/>
-                                <ToggleMenuFlyoutItem Text="Memory" IsChecked="{x:Bind ViewModel.ShowMemory, Mode=TwoWay}"/>
-                                <ToggleMenuFlyoutItem Text="Storage" IsChecked="{x:Bind ViewModel.ShowStorage, Mode=TwoWay}"/>
-                                <ToggleMenuFlyoutItem Text="Network" IsChecked="{x:Bind ViewModel.ShowNetwork, Mode=TwoWay}"/>
-                                <ToggleMenuFlyoutItem Text="Controller" IsChecked="{x:Bind ViewModel.ShowController, Mode=TwoWay}"/>
-                                <ToggleMenuFlyoutItem Text="Battery" IsChecked="{x:Bind ViewModel.ShowBattery, Mode=TwoWay}"/>
-                                <ToggleMenuFlyoutItem Text="Power Supply" IsChecked="{x:Bind ViewModel.ShowPsu, Mode=TwoWay}"/>
-                            </MenuFlyoutSubItem>
-                            
-                            <MenuFlyoutSeparator/>
-                            
-                            <MenuFlyoutItem Text="Reset Min/Max Values" 
-                                            Command="{x:Bind ViewModel.ResetMinMaxCommand}">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE845;"/>
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-                            
-                            <MenuFlyoutItem Text="Run Diagnostic" 
-                                            Command="{x:Bind ViewModel.RunDiagnosticCommand}">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE9D9;"/>
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-                        </MenuFlyout>
-                    </Button.Flyout>
-                </Button>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Button Style="{StaticResource SpeedButtonStyle}" CornerRadius="8" MinWidth="40" Padding="8,0" ToolTipService.ToolTip="Hardware Display">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon Glyph="&#xE950;" FontSize="16"/>
+                        </StackPanel>
+                        <Button.Flyout>
+                            <Flyout Placement="BottomEdgeAlignedRight">
+                                <StackPanel Spacing="12" MinWidth="180">
+                                    <TextBlock Text="Hardware Display" FontSize="14" FontWeight="SemiBold"/>
+                                    <ToggleSwitch Header="CPU" IsOn="{x:Bind ViewModel.ShowCPU, Mode=TwoWay}"/>
+                                    <ToggleSwitch Header="GPU" IsOn="{x:Bind ViewModel.ShowGPU, Mode=TwoWay}"/>
+                                    <ToggleSwitch Header="Motherboard" IsOn="{x:Bind ViewModel.ShowMotherboard, Mode=TwoWay}"/>
+                                    <ToggleSwitch Header="Memory" IsOn="{x:Bind ViewModel.ShowMemory, Mode=TwoWay}"/>
+                                    <ToggleSwitch Header="Storage" IsOn="{x:Bind ViewModel.ShowStorage, Mode=TwoWay}"/>
+                                    <ToggleSwitch Header="Network" IsOn="{x:Bind ViewModel.ShowNetwork, Mode=TwoWay}"/>
+                                    <ToggleSwitch Header="Controller" IsOn="{x:Bind ViewModel.ShowController, Mode=TwoWay}"/>
+                                    <ToggleSwitch Header="Battery" IsOn="{x:Bind ViewModel.ShowBattery, Mode=TwoWay}"/>
+                                    <ToggleSwitch Header="Power Supply" IsOn="{x:Bind ViewModel.ShowPsu, Mode=TwoWay}"/>
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                
+                    <Button x:Name="SettingsButton"
+                            Style="{StaticResource SpeedButtonStyle}"
+                            CornerRadius="8"
+                            MinWidth="40"
+                            Padding="8,0"
+                            ToolTipService.ToolTip="Settings">
+                        <FontIcon Glyph="&#xE713;" FontSize="18"/>
+                        <Button.Flyout>
+                            <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                <MenuFlyoutSubItem Text="Refresh Speed">
+                                    <MenuFlyoutSubItem.Icon>
+                                        <FontIcon Glyph="&#xE945;"/>
+                                    </MenuFlyoutSubItem.Icon>
+                                    <RadioMenuFlyoutItem Text="Ultra (250ms)" 
+                                                         IsChecked="{x:Bind ViewModel.IsUltraActive, Mode=OneWay}"
+                                                         Command="{x:Bind ViewModel.ChangeSpeedCommand}"
+                                                         CommandParameter="250"
+                                                         GroupName="RefreshSpeed"/>
+                                    <RadioMenuFlyoutItem Text="Fast (500ms)" 
+                                                         IsChecked="{x:Bind ViewModel.IsFastActive, Mode=OneWay}"
+                                                         Command="{x:Bind ViewModel.ChangeSpeedCommand}"
+                                                         CommandParameter="500"
+                                                         GroupName="RefreshSpeed"/>
+                                    <RadioMenuFlyoutItem Text="Normal (1000ms)" 
+                                                         IsChecked="{x:Bind ViewModel.IsNormalActive, Mode=OneWay}"
+                                                         Command="{x:Bind ViewModel.ChangeSpeedCommand}"
+                                                         CommandParameter="1000"
+                                                         GroupName="RefreshSpeed"/>
+                                </MenuFlyoutSubItem>
+                                
+                                <MenuFlyoutSubItem Text="Backdrop Style">
+                                    <MenuFlyoutSubItem.Icon>
+                                        <FontIcon Glyph="&#xE7F4;"/>
+                                    </MenuFlyoutSubItem.Icon>
+                                    <RadioMenuFlyoutItem Text="Acrylic" 
+                                                         IsChecked="{x:Bind ViewModel.IsBackdropAcrylic, Mode=TwoWay}"
+                                                         GroupName="Backdrop"/>
+                                    <RadioMenuFlyoutItem Text="Mica" 
+                                                         IsChecked="{x:Bind ViewModel.IsBackdropMica, Mode=TwoWay}"
+                                                         GroupName="Backdrop"/>
+                                    <RadioMenuFlyoutItem Text="Mica Alt" 
+                                                         IsChecked="{x:Bind ViewModel.IsBackdropMicaAlt, Mode=TwoWay}"
+                                                         GroupName="Backdrop"/>
+                                </MenuFlyoutSubItem>
+                                
+                                <MenuFlyoutSubItem Text="View Mode">
+                                    <MenuFlyoutSubItem.Icon>
+                                        <FontIcon Glyph="&#xE8FD;"/>
+                                    </MenuFlyoutSubItem.Icon>
+                                    <RadioMenuFlyoutItem Text="Cards" 
+                                                         IsChecked="{x:Bind ViewModel.IsCardsView, Mode=TwoWay}"
+                                                         GroupName="ViewMode"/>
+                                    <RadioMenuFlyoutItem Text="Tree" 
+                                                         IsChecked="{x:Bind ViewModel.IsTreeView, Mode=TwoWay}"
+                                                         GroupName="ViewMode"/>
+                                </MenuFlyoutSubItem>
+                                
+                                <MenuFlyoutSubItem Text="Temperature Unit">
+                                    <MenuFlyoutSubItem.Icon>
+                                        <FontIcon Glyph="&#xE9CA;"/>
+                                    </MenuFlyoutSubItem.Icon>
+                                    <RadioMenuFlyoutItem Text="Celsius (°C)" 
+                                                         IsChecked="{x:Bind ViewModel.IsCelsiusChecked, Mode=TwoWay}"
+                                                         GroupName="Temperature"/>
+                                    <RadioMenuFlyoutItem Text="Fahrenheit (°F)" 
+                                                         IsChecked="{x:Bind ViewModel.IsFahrenheitChecked, Mode=TwoWay}"
+                                                         GroupName="Temperature"/>
+                                </MenuFlyoutSubItem>
+                                
+                                <MenuFlyoutSeparator/>
+                                
+                                <MenuFlyoutItem Text="Reset Min/Max Values" 
+                                                Command="{x:Bind ViewModel.ResetMinMaxCommand}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE845;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                
+                                <MenuFlyoutItem Text="Run Diagnostic" 
+                                                Command="{x:Bind ViewModel.RunDiagnosticCommand}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE9D9;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyout>
+                        </Button.Flyout>
+                    </Button>
+                </StackPanel>
             </Grid>
         </Border>
 
