@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 using System;
+using HardwareMonitorWinUI3.Models;
 
 namespace HardwareMonitorWinUI3.UI
 {
@@ -40,6 +41,26 @@ namespace HardwareMonitorWinUI3.UI
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             return value?.ToString() == "\uE70D";
+        }
+    }
+
+    public class ViewModeToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is ViewMode currentMode && parameter is string targetModeStr)
+            {
+                if (Enum.TryParse<ViewMode>(targetModeStr, out var targetMode))
+                {
+                    return currentMode == targetMode ? Visibility.Visible : Visibility.Collapsed;
+                }
+            }
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -84,6 +105,33 @@ namespace HardwareMonitorWinUI3.UI
                 System.Diagnostics.Trace.WriteLine($"Failed to get resource: {key}");
             }
             return defaultValue;
+        }
+    }
+
+    public class TemperatureUnitToBoolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is TemperatureUnit unit && parameter is string targetUnitStr)
+            {
+                if (Enum.TryParse<TemperatureUnit>(targetUnitStr, out var targetUnit))
+                {
+                    return unit == targetUnit;
+                }
+            }
+            return false;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            if (value is bool isChecked && isChecked && parameter is string targetUnitStr)
+            {
+                if (Enum.TryParse<TemperatureUnit>(targetUnitStr, out var targetUnit))
+                {
+                    return targetUnit;
+                }
+            }
+            return DependencyProperty.UnsetValue;
         }
     }
 }

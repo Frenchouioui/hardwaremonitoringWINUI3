@@ -19,6 +19,7 @@ namespace HardwareMonitorWinUI3.Models
         private string _sensorType = string.Empty;
         private string? _cachedSensorCategory;
         private string? _cachedCategoryIcon;
+        private string? _sensorNameForThroughput;
 
         #endregion
 
@@ -93,6 +94,12 @@ namespace HardwareMonitorWinUI3.Models
                     "Frequency" => "Frequencies",
                     "Throughput" => "Throughput",
                     "Current" => "Current",
+                    "TimeSpan" => "Time Span",
+                    "Timing" => "Timings",
+                    "Energy" => "Energy",
+                    "Noise" => "Noise",
+                    "Conductivity" => "Conductivity",
+                    "Humidity" => "Humidity",
                     _ => "Others"
                 };
                 return _cachedSensorCategory;
@@ -123,6 +130,12 @@ namespace HardwareMonitorWinUI3.Models
                     "Controls" => "\uE713",
                     "Factors" => "\uE713",
                     "Current" => "\uE945",
+                    "Time Span" => "\uE823",
+                    "Timings" => "\uE823",
+                    "Energy" => "\uE83E",
+                    "Noise" => "\uE7F4",
+                    "Conductivity" => "\uE71E",
+                    "Humidity" => "\uE759",
                     "Others" => "\uE950",
                     _ => "\uE950"
                 };
@@ -168,6 +181,103 @@ public void UpdateMinMax(float currentValue, string unit, string precision = "F1
                 string formattedValue = currentValue.ToString(precision);
                 if (minUpdated) MinValue = $"Min: {formattedValue}{unit}";
                 if (maxUpdated) MaxValue = $"Max: {formattedValue}{unit}";
+            }
+        }
+        
+        public void UpdateMinMaxThroughput(float currentValue, string sensorName)
+        {
+            if (currentValue < 0) return;
+            
+            _sensorNameForThroughput = sensorName;
+            
+            bool minUpdated = false;
+            bool maxUpdated = false;
+
+            if (!_minRaw.HasValue || currentValue < _minRaw.Value)
+            {
+                _minRaw = currentValue;
+                minUpdated = true;
+            }
+
+            if (!_maxRaw.HasValue || currentValue > _maxRaw.Value)
+            {
+                _maxRaw = currentValue;
+                maxUpdated = true;
+            }
+
+            if (minUpdated || maxUpdated)
+            {
+                const int KB = 1024;
+                const int MB = 1048576;
+                
+                string FormatValue(float val)
+                {
+                    return val < MB 
+                        ? $"{val / KB:F1} KB/s" 
+                        : $"{val / MB:F1} MB/s";
+                }
+                
+                if (minUpdated) MinValue = $"Min: {FormatValue(currentValue)}";
+                if (maxUpdated) MaxValue = $"Max: {FormatValue(currentValue)}";
+            }
+        }
+        
+        public void UpdateMinMaxTimeSpan(float currentValue)
+        {
+            bool minUpdated = false;
+            bool maxUpdated = false;
+
+            if (!_minRaw.HasValue || currentValue < _minRaw.Value)
+            {
+                _minRaw = currentValue;
+                minUpdated = true;
+            }
+
+            if (!_maxRaw.HasValue || currentValue > _maxRaw.Value)
+            {
+                _maxRaw = currentValue;
+                maxUpdated = true;
+            }
+
+            if (minUpdated || maxUpdated)
+            {
+                string formattedValue = TimeSpan.FromSeconds(currentValue).ToString("g");
+                if (minUpdated) MinValue = $"Min: {formattedValue}";
+                if (maxUpdated) MaxValue = $"Max: {formattedValue}";
+            }
+        }
+        
+        public void UpdateMinMaxTemperature(float currentValue)
+        {
+            bool minUpdated = false;
+            bool maxUpdated = false;
+
+            if (!_minRaw.HasValue || currentValue < _minRaw.Value)
+            {
+                _minRaw = currentValue;
+                minUpdated = true;
+            }
+
+            if (!_maxRaw.HasValue || currentValue > _maxRaw.Value)
+            {
+                _maxRaw = currentValue;
+                maxUpdated = true;
+            }
+
+            if (minUpdated || maxUpdated)
+            {
+                string FormatTemperature(float celsius)
+                {
+                    if (Hardware.SensorExtensions.CurrentTemperatureUnit == TemperatureUnit.Fahrenheit)
+                    {
+                        float fahrenheit = celsius * 1.8f + 32f;
+                        return $"{fahrenheit:F1} \u00b0F";
+                    }
+                    return $"{celsius:F1} \u00b0C";
+                }
+                
+                if (minUpdated) MinValue = $"Min: {FormatTemperature(currentValue)}";
+                if (maxUpdated) MaxValue = $"Max: {FormatTemperature(currentValue)}";
             }
         }
 

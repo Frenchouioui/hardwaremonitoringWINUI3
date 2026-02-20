@@ -9,6 +9,8 @@ namespace HardwareMonitorWinUI3.Models
         Memory,
         Network,
         Controller,
+        Battery,
+        Psu,
         Other
     }
 }

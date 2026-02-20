@@ -121,6 +121,13 @@ namespace HardwareMonitorWinUI3.Views
             }
         }
 
+        private void ViewModeToggle_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.CurrentViewMode = ViewModel.CurrentViewMode == ViewMode.Cards 
+                ? ViewMode.Tree 
+                : ViewMode.Cards;
+        }
+
         #endregion
 
         public void Dispose()

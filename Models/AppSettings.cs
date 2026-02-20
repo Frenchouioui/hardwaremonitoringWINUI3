@@ -9,6 +9,12 @@ namespace HardwareMonitorWinUI3.Models
         MicaAlt = 2
     }
 
+    public enum TemperatureUnit
+    {
+        Celsius = 0,
+        Fahrenheit = 1
+    }
+
     public class AppSettings
     {
         private readonly object _lock = new();
@@ -26,6 +32,10 @@ namespace HardwareMonitorWinUI3.Models
         private int _showMemory = 1;
         private int _showNetwork = 1;
         private int _showController = 1;
+        private int _viewMode = (int)ViewMode.Cards;
+        private int _temperatureUnit;
+        private int _showBattery = 1;
+        private int _showPsu = 1;
 
         public int WindowX { get => _windowX; set => _windowX = value; }
         public int WindowY { get => _windowY; set => _windowY = value; }
@@ -37,6 +47,12 @@ namespace HardwareMonitorWinUI3.Models
         {
             get => (BackdropStyle)Interlocked.CompareExchange(ref _backdropStyle, 0, 0);
             set => Interlocked.Exchange(ref _backdropStyle, (int)value);
+        }
+
+        public TemperatureUnit TemperatureUnit
+        {
+            get => (TemperatureUnit)Interlocked.CompareExchange(ref _temperatureUnit, 0, 0);
+            set => Interlocked.Exchange(ref _temperatureUnit, (int)value);
         }
 
         public int RefreshInterval
@@ -52,6 +68,14 @@ namespace HardwareMonitorWinUI3.Models
         public bool ShowMemory { get => Interlocked.CompareExchange(ref _showMemory, 0, 0) == 1; set => Interlocked.Exchange(ref _showMemory, value ? 1 : 0); }
         public bool ShowNetwork { get => Interlocked.CompareExchange(ref _showNetwork, 0, 0) == 1; set => Interlocked.Exchange(ref _showNetwork, value ? 1 : 0); }
         public bool ShowController { get => Interlocked.CompareExchange(ref _showController, 0, 0) == 1; set => Interlocked.Exchange(ref _showController, value ? 1 : 0); }
+        public bool ShowBattery { get => Interlocked.CompareExchange(ref _showBattery, 0, 0) == 1; set => Interlocked.Exchange(ref _showBattery, value ? 1 : 0); }
+        public bool ShowPsu { get => Interlocked.CompareExchange(ref _showPsu, 0, 0) == 1; set => Interlocked.Exchange(ref _showPsu, value ? 1 : 0); }
+
+        public ViewMode ViewMode
+        {
+            get => (ViewMode)Interlocked.CompareExchange(ref _viewMode, 0, 0);
+            set => Interlocked.Exchange(ref _viewMode, (int)value);
+        }
 
         public AppSettings CreateSnapshot()
         {
@@ -72,7 +96,11 @@ namespace HardwareMonitorWinUI3.Models
                     ShowStorage = _showStorage == 1,
                     ShowMemory = _showMemory == 1,
                     ShowNetwork = _showNetwork == 1,
-                    ShowController = _showController == 1
+                    ShowController = _showController == 1,
+                    ViewMode = (ViewMode)_viewMode,
+                    TemperatureUnit = (TemperatureUnit)_temperatureUnit,
+                    ShowBattery = _showBattery == 1,
+                    ShowPsu = _showPsu == 1
                 };
             }
         }

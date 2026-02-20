@@ -85,7 +85,9 @@ namespace HardwareMonitorWinUI3.Hardware
                         IsMotherboardEnabled = true,
                         IsControllerEnabled = true,
                         IsNetworkEnabled = true,
-                        IsStorageEnabled = true
+                        IsStorageEnabled = true,
+                        IsBatteryEnabled = true,
+                        IsPsuEnabled = true
                     };
 
                     linked.Token.ThrowIfCancellationRequested();
@@ -374,9 +376,24 @@ namespace HardwareMonitorWinUI3.Hardware
                         {
                             sensorData.Value = newFormattedValue;
 
-                            var unit = sensorType.GetSensorUnit();
-                            var precision = sensorType.GetSensorPrecision();
-                            sensorData.UpdateMinMax(rawValue, unit, precision);
+                            if (sensorType == SensorType.Throughput)
+                            {
+                                sensorData.UpdateMinMaxThroughput(rawValue, sensorName ?? "");
+                            }
+                            else if (sensorType == SensorType.TimeSpan)
+                            {
+                                sensorData.UpdateMinMaxTimeSpan(rawValue);
+                            }
+                            else if (sensorType == SensorType.Temperature)
+                            {
+                                sensorData.UpdateMinMaxTemperature(rawValue);
+                            }
+                            else
+                            {
+                                var unit = sensorType.GetSensorUnit();
+                                var precision = sensorType.GetSensorPrecision();
+                                sensorData.UpdateMinMax(rawValue, unit, precision);
+                            }
                         }
                     }
                     else if (sensorData.Value != naString)

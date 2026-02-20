@@ -44,6 +44,10 @@ namespace HardwareMonitorWinUI3.Core
         private bool _showMemory = true;
         private bool _showNetwork = true;
         private bool _showController = true;
+        private bool _showBattery = true;
+        private bool _showPsu = true;
+        private ViewMode _currentViewMode = ViewMode.Cards;
+        private TemperatureUnit _temperatureUnit = TemperatureUnit.Celsius;
 
         private int _pendingSaveCount;
         private readonly object _saveLock = new();
@@ -92,6 +96,8 @@ namespace HardwareMonitorWinUI3.Core
                 HardwareCategory.Memory => ShowMemory,
                 HardwareCategory.Network => ShowNetwork,
                 HardwareCategory.Controller => ShowController,
+                HardwareCategory.Battery => ShowBattery,
+                HardwareCategory.Psu => ShowPsu,
                 _ => true
             };
         }
@@ -160,6 +166,71 @@ namespace HardwareMonitorWinUI3.Core
         {
             get => _showController;
             set => SetFilterProperty(ref _showController, value, (s, v) => s.ShowController = v);
+        }
+
+        public bool ShowBattery
+        {
+            get => _showBattery;
+            set => SetFilterProperty(ref _showBattery, value, (s, v) => s.ShowBattery = v);
+        }
+
+        public bool ShowPsu
+        {
+            get => _showPsu;
+            set => SetFilterProperty(ref _showPsu, value, (s, v) => s.ShowPsu = v);
+        }
+
+        public TemperatureUnit TemperatureUnit
+        {
+            get => _temperatureUnit;
+            set
+            {
+                if (SetProperty(ref _temperatureUnit, value))
+                {
+                    _settingsService.Settings.TemperatureUnit = value;
+                    SensorExtensions.CurrentTemperatureUnit = value;
+                    ScheduleSave();
+                    OnPropertyChanged(nameof(IsCelsius));
+                    OnPropertyChanged(nameof(IsFahrenheit));
+                }
+            }
+        }
+        
+        public bool IsCelsius
+        {
+            get => _temperatureUnit == TemperatureUnit.Celsius;
+            set
+            {
+                if (value)
+                {
+                    TemperatureUnit = TemperatureUnit.Celsius;
+                }
+            }
+        }
+        
+        public bool IsFahrenheit
+        {
+            get => _temperatureUnit == TemperatureUnit.Fahrenheit;
+            set
+            {
+                if (value)
+                {
+                    TemperatureUnit = TemperatureUnit.Fahrenheit;
+                }
+            }
+        }
+
+        public ViewMode CurrentViewMode
+        {
+            get => _currentViewMode;
+            set
+            {
+                if (SetProperty(ref _currentViewMode, value))
+                {
+                    _settingsService.Settings.ViewMode = value;
+                    ScheduleSave();
+                }
+            }
         }
 
         private bool SetFilterProperty(ref bool field, bool value, Action<AppSettings, bool> settingsSetter, [CallerMemberName] string? name = null)
@@ -235,6 +306,12 @@ namespace HardwareMonitorWinUI3.Core
             _showMemory = settings.ShowMemory;
             _showNetwork = settings.ShowNetwork;
             _showController = settings.ShowController;
+            _showBattery = settings.ShowBattery;
+            _showPsu = settings.ShowPsu;
+            _currentViewMode = settings.ViewMode;
+            _temperatureUnit = settings.TemperatureUnit;
+            
+            SensorExtensions.CurrentTemperatureUnit = _temperatureUnit;
 
             _backdropIndicator = UIExtensions.GetBackdropDisplayName(settings.BackdropStyle);
         }
@@ -248,10 +325,14 @@ namespace HardwareMonitorWinUI3.Core
             OnPropertyChanged(nameof(ShowMemory));
             OnPropertyChanged(nameof(ShowNetwork));
             OnPropertyChanged(nameof(ShowController));
+            OnPropertyChanged(nameof(ShowBattery));
+            OnPropertyChanged(nameof(ShowPsu));
+            OnPropertyChanged(nameof(TemperatureUnit));
             OnPropertyChanged(nameof(ActiveSpeedButton));
             OnPropertyChanged(nameof(IsUltraActive));
             OnPropertyChanged(nameof(IsFastActive));
             OnPropertyChanged(nameof(IsNormalActive));
+            OnPropertyChanged(nameof(CurrentViewMode));
         }
 
         private void ScheduleSave()

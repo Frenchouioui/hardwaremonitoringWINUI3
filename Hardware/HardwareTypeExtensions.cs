@@ -14,6 +14,8 @@ namespace HardwareMonitorWinUI3.Hardware
             HardwareType.Memory => HardwareCategory.Memory,
             HardwareType.Network => HardwareCategory.Network,
             HardwareType.EmbeddedController => HardwareCategory.Controller,
+            HardwareType.Battery => HardwareCategory.Battery,
+            HardwareType.Psu => HardwareCategory.Psu,
             _ => HardwareCategory.Other
         };
     }

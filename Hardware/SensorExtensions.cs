@@ -1,3 +1,4 @@
+using System;
 using LibreHardwareMonitor.Hardware;
 using HardwareMonitorWinUI3.Models;
 
@@ -5,6 +6,8 @@ namespace HardwareMonitorWinUI3.Hardware
 {
     public static class SensorExtensions
     {
+        public static TemperatureUnit CurrentTemperatureUnit { get; set; } = TemperatureUnit.Celsius;
+
         public static string GetSensorUnit(this SensorType type) => type switch
         {
             SensorType.Temperature => "\u00b0C",
@@ -21,16 +24,22 @@ namespace HardwareMonitorWinUI3.Hardware
             SensorType.Level => "%",
             SensorType.Factor => "",
             SensorType.Frequency => "Hz",
-            SensorType.Throughput => "MB/s",
+            SensorType.Throughput => "B/s",
+            SensorType.TimeSpan => "",
+            SensorType.Timing => "ns",
+            SensorType.Energy => "mWh",
+            SensorType.Noise => "dBA",
+            SensorType.Conductivity => "\u00b5S/cm",
+            SensorType.Humidity => "%",
             _ => ""
         };
 
         public static string GetSensorPrecision(this SensorType type) => type switch
         {
             SensorType.Temperature => "F1",
-            SensorType.Clock => "F0",
+            SensorType.Clock => "F1",
             SensorType.Voltage => "F3",
-            SensorType.Current => "F2",
+            SensorType.Current => "F3",
             SensorType.Power => "F1",
             SensorType.Data => "F1",
             SensorType.SmallData => "F1",
@@ -39,8 +48,15 @@ namespace HardwareMonitorWinUI3.Hardware
             SensorType.Flow => "F1",
             SensorType.Control => "F1",
             SensorType.Level => "F1",
-            SensorType.Frequency => "F0",
-            SensorType.Throughput => "F0",
+            SensorType.Frequency => "F1",
+            SensorType.Throughput => "F1",
+            SensorType.TimeSpan => "g",
+            SensorType.Timing => "F3",
+            SensorType.Energy => "F0",
+            SensorType.Noise => "F0",
+            SensorType.Conductivity => "F1",
+            SensorType.Humidity => "F0",
+            SensorType.Factor => "F3",
             _ => "F1"
         };
 
@@ -60,6 +76,13 @@ namespace HardwareMonitorWinUI3.Hardware
             SensorType.Level => "\uE9D9",
             SensorType.Frequency => "\uE823",
             SensorType.Throughput => "\uE8AB",
+            SensorType.TimeSpan => "\uE823",
+            SensorType.Timing => "\uE823",
+            SensorType.Energy => "\uE83E",
+            SensorType.Noise => "\uE7F4",
+            SensorType.Conductivity => "\uE71E",
+            SensorType.Humidity => "\uE759",
+            SensorType.Factor => "\uE950",
             _ => "\uE950"
         };
 
@@ -68,7 +91,61 @@ namespace HardwareMonitorWinUI3.Hardware
             if (sensor is null || !sensor.Value.HasValue)
                 return "N/A";
             
-            return $"{sensor.Value!.Value.ToString(sensor.SensorType.GetSensorPrecision())}{sensor.SensorType.GetSensorUnit()}";
+            float value = sensor.Value.Value;
+            
+            switch (sensor.SensorType)
+            {
+                case SensorType.Temperature:
+                    return FormatTemperature(value);
+                    
+                case SensorType.Throughput:
+                    return FormatThroughput(value, sensor.Name);
+                    
+                case SensorType.TimeSpan:
+                    return System.TimeSpan.FromSeconds(value).ToString("g");
+                    
+                default:
+                    return $"{value.ToString(sensor.SensorType.GetSensorPrecision())} {sensor.SensorType.GetSensorUnit()}".TrimEnd();
+            }
+        }
+        
+        private static string FormatTemperature(float celsius)
+        {
+            if (CurrentTemperatureUnit == TemperatureUnit.Fahrenheit)
+            {
+                float fahrenheit = celsius * 1.8f + 32f;
+                return $"{fahrenheit:F1} \u00b0F";
+            }
+            return $"{celsius:F1} \u00b0C";
+        }
+        
+        public static float CelsiusToFahrenheit(float celsius) => celsius * 1.8f + 32f;
+        
+        private static string FormatThroughput(float value, string sensorName)
+        {
+            const int KB = 1024;
+            const int MB = 1048576;
+            
+            if (sensorName == "Connection Speed")
+            {
+                if (value < KB)
+                    return $"{value:F0} bps";
+                else if (value < MB)
+                    return $"{value / KB:F1} Kbps";
+                else if (value < 1073741824)
+                    return $"{value / MB:F1} Mbps";
+                else
+                    return $"{value / 1073741824:F1} Gbps";
+            }
+            
+            return value < MB 
+                ? $"{value / KB:F1} KB/s" 
+                : $"{value / MB:F1} MB/s";
+        }
+        
+        public static string FormatThroughputValue(float value, string sensorName)
+        {
+            return FormatThroughput(value, sensorName);
         }
 
         public static SensorData CreateSensorData(this ISensor sensor)
@@ -93,9 +170,26 @@ namespace HardwareMonitorWinUI3.Hardware
 
             if (sensor.Value.HasValue)
             {
-                string unit = sensor.SensorType.GetSensorUnit();
-                string precision = sensor.SensorType.GetSensorPrecision();
-                sensorData.UpdateMinMax(sensor.Value.Value, unit, precision);
+                sensorData.SensorType = sensor.SensorType.ToString();
+                
+                if (sensor.SensorType == SensorType.Throughput)
+                {
+                    sensorData.UpdateMinMaxThroughput(sensor.Value.Value, sensor.Name ?? "");
+                }
+                else if (sensor.SensorType == SensorType.TimeSpan)
+                {
+                    sensorData.UpdateMinMaxTimeSpan(sensor.Value.Value);
+                }
+                else if (sensor.SensorType == SensorType.Temperature)
+                {
+                    sensorData.UpdateMinMaxTemperature(sensor.Value.Value);
+                }
+                else
+                {
+                    string unit = sensor.SensorType.GetSensorUnit();
+                    string precision = sensor.SensorType.GetSensorPrecision();
+                    sensorData.UpdateMinMax(sensor.Value.Value, unit, precision);
+                }
             }
 
             return sensorData;

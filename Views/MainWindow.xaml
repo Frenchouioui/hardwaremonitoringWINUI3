@@ -12,6 +12,93 @@
             <ui:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <ui:BoolToExpandIconConverter x:Key="BoolToExpandIconConverter"/>
             <ui:BoolToAccentBrushConverter x:Key="BoolToAccentBrushConverter"/>
+            <ui:ViewModeToVisibilityConverter x:Key="ViewModeToVisibilityConverter"/>
+            <ui:TemperatureUnitToBoolConverter x:Key="TemperatureUnitToBoolConverter"/>
+            
+            <DataTemplate x:Key="TreeHardwareNodeTemplate" x:DataType="models:HardwareNode">
+                <Expander IsExpanded="True" 
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch"
+                          CornerRadius="8"
+                          Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                          BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                          BorderThickness="1"
+                          Margin="0,0,0,8">
+                    <Expander.Header>
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <FontIcon Grid.Column="0" Glyph="{Binding CategoryIcon}" FontSize="16" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="{Binding SensorCount}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="12,0,0,0" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Expander.Header>
+                    <Expander.Content>
+                        <ItemsControl ItemsSource="{Binding SensorGroups}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:SensorGroup">
+                                    <Expander IsExpanded="True"
+                                              HorizontalAlignment="Stretch"
+                                              HorizontalContentAlignment="Stretch"
+                                              CornerRadius="6"
+                                              Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                              Margin="0,0,0,6">
+                                        <Expander.Header>
+                                            <Grid Margin="0,2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <FontIcon Grid.Column="0" Glyph="{Binding CategoryIcon}" FontSize="14" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding CategoryName}" FontWeight="Medium" FontSize="13" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Expander.Header>
+                                        <Expander.Content>
+                                            <Grid Margin="8,4,8,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Grid.Column="0" Text="Name" FontSize="11" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorTertiaryBrush}" Margin="0,0,0,8"/>
+                                                <TextBlock Grid.Column="1" Text="Value" FontSize="11" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorTertiaryBrush}" MinWidth="100" TextAlignment="Right" Margin="0,0,0,8"/>
+                                                <TextBlock Grid.Column="2" Text="Min" FontSize="11" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorTertiaryBrush}" MinWidth="120" TextAlignment="Right" Margin="0,0,0,8"/>
+                                                <TextBlock Grid.Column="3" Text="Max" FontSize="11" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorTertiaryBrush}" MinWidth="120" TextAlignment="Right" Margin="0,0,0,8"/>
+                                                <ItemsControl Grid.Row="1" Grid.ColumnSpan="4" ItemsSource="{Binding Sensors}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:SensorData">
+                                                            <Grid Margin="0,2,0,0">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="12" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Name}" VerticalAlignment="Center"/>
+                                                                <TextBlock Grid.Column="1" Text="{Binding Value}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" MinWidth="100" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Value}" VerticalAlignment="Center"/>
+                                                                <TextBlock Grid.Column="2" Text="{Binding MinValue}" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" MinWidth="120" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding MinValue}" VerticalAlignment="Center"/>
+                                                                <TextBlock Grid.Column="3" Text="{Binding MaxValue}" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" MinWidth="120" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding MaxValue}" VerticalAlignment="Center"/>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </Grid>
+                                        </Expander.Content>
+                                    </Expander>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Expander.Content>
+                </Expander>
+            </DataTemplate>
 
             <DataTemplate x:Key="SensorDataTemplate" x:DataType="models:SensorData">
                 <Border Style="{StaticResource SensorCardStyle}">
@@ -287,11 +374,18 @@
                     </Button>
 
                     <Button Command="{Binding ViewModel.RunDiagnosticCommand, ElementName=RootWindow}"
-                            Style="{StaticResource SpeedButtonStyle}">
+                             Style="{StaticResource SpeedButtonStyle}">
                         <StackPanel Orientation="Horizontal">
                             <FontIcon Glyph="&#xE9D9;" FontSize="12" Margin="0,0,4,0"/>
                             <TextBlock Text="DIAG" FontSize="11" FontWeight="SemiBold"/>
                         </StackPanel>
+                    </Button>
+
+                    <Button x:Name="ViewModeToggle"
+                            Click="ViewModeToggle_Click"
+                            Style="{StaticResource SpeedButtonStyle}"
+                            ToolTipService.ToolTip="Toggle Cards/Tree View">
+                        <FontIcon Glyph="&#xE8FD;" FontSize="14" FontFamily="Segoe MDL2 Assets"/>
                     </Button>
 
                     <Button x:Name="SettingsButton"
@@ -305,13 +399,23 @@
                              <Flyout Placement="BottomEdgeAlignedLeft">
                                 <StackPanel Spacing="12" MinWidth="220">
                                     <TextBlock Text="Hardware Display" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
-<ToggleSwitch Header="Motherboard" IsOn="{x:Bind ViewModel.ShowMotherboard, Mode=TwoWay}"/>
+                                    <ToggleSwitch Header="Motherboard" IsOn="{x:Bind ViewModel.ShowMotherboard, Mode=TwoWay}"/>
                                     <ToggleSwitch Header="CPU" IsOn="{x:Bind ViewModel.ShowCPU, Mode=TwoWay}"/>
                                     <ToggleSwitch Header="Memory" IsOn="{x:Bind ViewModel.ShowMemory, Mode=TwoWay}"/>
                                     <ToggleSwitch Header="GPU" IsOn="{x:Bind ViewModel.ShowGPU, Mode=TwoWay}"/>
                                     <ToggleSwitch Header="Storage" IsOn="{x:Bind ViewModel.ShowStorage, Mode=TwoWay}"/>
                                     <ToggleSwitch Header="Network" IsOn="{x:Bind ViewModel.ShowNetwork, Mode=TwoWay}"/>
                                     <ToggleSwitch Header="Controller" IsOn="{x:Bind ViewModel.ShowController, Mode=TwoWay}"/>
+                                    <ToggleSwitch Header="Battery" IsOn="{x:Bind ViewModel.ShowBattery, Mode=TwoWay}"/>
+                                    <ToggleSwitch Header="Power Supply" IsOn="{x:Bind ViewModel.ShowPsu, Mode=TwoWay}"/>
+                                    
+                                    <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" Margin="0,4"/>
+                                    
+                                    <TextBlock Text="Temperature Unit" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="16">
+                                        <RadioButton Content="Celsius" GroupName="TempUnit" IsChecked="{x:Bind ViewModel.IsCelsius, Mode=TwoWay}"/>
+                                        <RadioButton Content="Fahrenheit" GroupName="TempUnit" IsChecked="{x:Bind ViewModel.IsFahrenheit, Mode=TwoWay}"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </Flyout>
                         </Button.Flyout>
@@ -320,13 +424,15 @@
             </Grid>
         </Border>
 
-        <!-- Main content: ListView with proper virtualization (no outer ScrollViewer) -->
-        <ListView Grid.Row="2"
-                  x:Name="HardwareList"
-                  ItemsSource="{Binding ViewModel.HardwareNodes, ElementName=RootWindow, Mode=OneWay}"
-                  SelectionMode="None"
-                  IsItemClickEnabled="False"
-                  Padding="24,16,24,24">
+        <!-- Main content: Cards View or Tree View -->
+        <Grid Grid.Row="2">
+            <!-- Cards View -->
+            <ListView x:Name="HardwareList"
+                      ItemsSource="{Binding ViewModel.HardwareNodes, ElementName=RootWindow, Mode=OneWay}"
+                      SelectionMode="None"
+                      IsItemClickEnabled="False"
+                      Padding="24,16,24,24"
+                      Visibility="{Binding ViewModel.CurrentViewMode, ElementName=RootWindow, Converter={StaticResource ViewModeToVisibilityConverter}, ConverterParameter=Cards}">
 
             <!-- Status card as ListView header so it scrolls with content -->
             <ListView.Header>
@@ -489,5 +595,13 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        
+        <!-- Tree View -->
+        <ScrollViewer Visibility="{Binding ViewModel.CurrentViewMode, ElementName=RootWindow, Converter={StaticResource ViewModeToVisibilityConverter}, ConverterParameter=Tree}"
+                      Padding="24,16,24,24">
+            <ItemsControl ItemsSource="{Binding ViewModel.HardwareNodes, ElementName=RootWindow, Mode=OneWay}"
+                          ItemTemplate="{StaticResource TreeHardwareNodeTemplate}"/>
+        </ScrollViewer>
+        </Grid>
     </Grid>
 </Window>
