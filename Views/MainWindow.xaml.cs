@@ -14,8 +14,6 @@ namespace HardwareMonitorWinUI3.Views
     {
         public AppViewModel ViewModel { get; }
         private readonly ILogger _logger;
-        private bool _uiReady;
-        private bool _isBackdropChanging;
         private bool _disposed;
 
         public MainWindow(
@@ -36,11 +34,8 @@ namespace HardwareMonitorWinUI3.Views
 
                 var backdropIndex = (int)settingsService.Settings.BackdropStyle;
                 SafeApplyBackdrop(backdropIndex);
-                BackdropSelector.SelectedIndex = backdropIndex;
 
                 ViewModel.NotifySettingsLoaded();
-
-                _uiReady = true;
 
                 _ = InitializeHardwareAsync();
             }
@@ -91,41 +86,12 @@ namespace HardwareMonitorWinUI3.Views
             }
         }
 
-        private void BackdropSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (!_uiReady || _isBackdropChanging) return;
-
-            if (sender is ComboBox comboBox && comboBox.SelectedIndex >= 0)
-            {
-                _isBackdropChanging = true;
-                comboBox.IsEnabled = false;
-                
-                try
-                {
-                    SafeApplyBackdrop(comboBox.SelectedIndex);
-                    ViewModel?.ChangeBackdropCommand?.Execute(comboBox.SelectedIndex);
-                }
-                finally
-                {
-                    _isBackdropChanging = false;
-                    comboBox.IsEnabled = true;
-                }
-            }
-        }
-
         private void ToggleGroup_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button { Tag: SensorGroup sensorGroup })
             {
                 sensorGroup.IsExpanded = !sensorGroup.IsExpanded;
             }
-        }
-
-        private void ViewModeToggle_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.CurrentViewMode = ViewModel.CurrentViewMode == ViewMode.Cards 
-                ? ViewMode.Tree 
-                : ViewMode.Cards;
         }
 
         #endregion

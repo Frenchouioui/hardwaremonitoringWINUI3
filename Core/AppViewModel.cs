@@ -330,6 +330,13 @@ namespace HardwareMonitorWinUI3.Core
         public bool IsFastActive => ActiveSpeedButton == SpeedFast;
         public bool IsNormalActive => ActiveSpeedButton == SpeedNormal;
 
+        public bool IsCardsView => CurrentViewMode == ViewMode.Cards;
+        public bool IsTreeView => CurrentViewMode == ViewMode.Tree;
+
+        public bool IsBackdropAcrylic => _settingsService.Settings.BackdropStyle == BackdropStyle.Acrylic;
+        public bool IsBackdropMica => _settingsService.Settings.BackdropStyle == BackdropStyle.Mica;
+        public bool IsBackdropMicaAlt => _settingsService.Settings.BackdropStyle == BackdropStyle.MicaAlt;
+
         #endregion
 
         #region Commands
@@ -338,6 +345,8 @@ namespace HardwareMonitorWinUI3.Core
         public IRelayCommand ResetMinMaxCommand { get; }
         public IRelayCommand RunDiagnosticCommand { get; }
         public IRelayCommand<object?> ChangeBackdropCommand { get; }
+        public IRelayCommand<object?> SetViewModeCommand { get; }
+        public IRelayCommand<object?> SetTemperatureUnitCommand { get; }
 
         #endregion
 
@@ -359,6 +368,8 @@ namespace HardwareMonitorWinUI3.Core
             ResetMinMaxCommand = new RelayCommand(ExecuteResetMinMax);
             RunDiagnosticCommand = new RelayCommand(ExecuteRunDiagnostic);
             ChangeBackdropCommand = new RelayCommand<object?>(ExecuteChangeBackdrop);
+            SetViewModeCommand = new RelayCommand<object?>(ExecuteSetViewMode);
+            SetTemperatureUnitCommand = new RelayCommand<object?>(ExecuteSetTemperatureUnit);
 
             _hardwareService.TimerTick += OnTimerTick;
             _hardwareService.UpsUpdated += OnUpsUpdated;
@@ -511,6 +522,25 @@ namespace HardwareMonitorWinUI3.Core
                 _settingsService.Settings.BackdropStyle = backdropStyle;
                 _settingsService.Save();
                 SetBackdropIndicator(UIExtensions.GetBackdropDisplayName(backdropStyle));
+                OnPropertyChanged(nameof(IsBackdropAcrylic));
+                OnPropertyChanged(nameof(IsBackdropMica));
+                OnPropertyChanged(nameof(IsBackdropMicaAlt));
+            }
+        }
+
+        private void ExecuteSetViewMode(object? parameter)
+        {
+            if (parameter is int index && Enum.IsDefined(typeof(ViewMode), index))
+            {
+                CurrentViewMode = (ViewMode)index;
+            }
+        }
+
+        private void ExecuteSetTemperatureUnit(object? parameter)
+        {
+            if (parameter is int index && Enum.IsDefined(typeof(TemperatureUnit), index))
+            {
+                TemperatureUnit = (TemperatureUnit)index;
             }
         }
 

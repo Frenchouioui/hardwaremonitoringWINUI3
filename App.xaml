@@ -45,7 +45,6 @@
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="CornerRadius" Value="8"/>
                 <Setter Property="Padding" Value="12"/>
-                <Setter Property="MinWidth" Value="260"/>
                 <Setter Property="MinHeight" Value="80"/>
                 <Setter Property="Margin" Value="4"/>
             </Style>

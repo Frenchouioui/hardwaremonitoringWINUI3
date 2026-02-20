@@ -301,126 +301,127 @@
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderThickness="0,0,0,1"
                 BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}">
-            <Grid Margin="16,0">
+            <Grid Margin="24,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <FontIcon Glyph="&#xE950;" FontSize="20" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" Margin="0,0,8,0"/>
+                    <FontIcon Glyph="&#xE950;" FontSize="20" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" Margin="0,0,12,0"/>
                     <TextBlock Text="Hardware Monitor" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center" Margin="0,0,16,0">
-                    <ComboBox x:Name="BackdropSelector"
-                              SelectionChanged="BackdropSelector_SelectionChanged"
-                              MinWidth="120"
-                              VerticalAlignment="Center"
-                              CornerRadius="8">
-                        <ComboBoxItem>
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <FontIcon Glyph="&#xE91C;" FontSize="12"/>
-                                <TextBlock Text="Acrylic" FontSize="12"/>
-                            </StackPanel>
-                        </ComboBoxItem>
-                        <ComboBoxItem>
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <FontIcon Glyph="&#xE7E8;" FontSize="12"/>
-                                <TextBlock Text="Mica" FontSize="12"/>
-                            </StackPanel>
-                        </ComboBoxItem>
-                        <ComboBoxItem>
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <FontIcon Glyph="&#xE7E8;" FontSize="12"/>
-                                <TextBlock Text="Mica Alt" FontSize="12"/>
-                            </StackPanel>
-                        </ComboBoxItem>
-                    </ComboBox>
-                </StackPanel>
-
-                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <Button Command="{Binding ViewModel.ChangeSpeedCommand, ElementName=RootWindow}"
-                            CommandParameter="250"
-                            BorderBrush="{Binding ViewModel.IsUltraActive, ElementName=RootWindow, Converter={StaticResource BoolToAccentBrushConverter}}"
-                            Style="{StaticResource SpeedButtonStyle}">
-                        <TextBlock Text="ULTRA" FontSize="11" FontWeight="SemiBold"/>
-                    </Button>
-
-                    <Button Command="{Binding ViewModel.ChangeSpeedCommand, ElementName=RootWindow}"
-                            CommandParameter="500"
-                            BorderBrush="{Binding ViewModel.IsFastActive, ElementName=RootWindow, Converter={StaticResource BoolToAccentBrushConverter}}"
-                            Style="{StaticResource SpeedButtonStyle}">
-                        <TextBlock Text="FAST" FontSize="11" FontWeight="SemiBold"/>
-                    </Button>
-
-                    <Button Command="{Binding ViewModel.ChangeSpeedCommand, ElementName=RootWindow}"
-                            CommandParameter="1000"
-                            BorderBrush="{Binding ViewModel.IsNormalActive, ElementName=RootWindow, Converter={StaticResource BoolToAccentBrushConverter}}"
-                            Style="{StaticResource SpeedButtonStyle}">
-                        <TextBlock Text="NORMAL" FontSize="11" FontWeight="SemiBold"/>
-                    </Button>
-
-                    <Border Width="1" Height="24" Background="{ThemeResource DividerStrokeColorDefaultBrush}"
-                            VerticalAlignment="Center" Margin="4,0"/>
-
-                    <Button Command="{Binding ViewModel.ResetMinMaxCommand, ElementName=RootWindow}"
-                            Style="{StaticResource SpeedButtonStyle}">
-                        <StackPanel Orientation="Horizontal">
-                            <FontIcon Glyph="&#xE845;" FontSize="12" Margin="0,0,4,0"/>
-                            <TextBlock Text="RESET" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button Command="{Binding ViewModel.RunDiagnosticCommand, ElementName=RootWindow}"
-                             Style="{StaticResource SpeedButtonStyle}">
-                        <StackPanel Orientation="Horizontal">
-                            <FontIcon Glyph="&#xE9D9;" FontSize="12" Margin="0,0,4,0"/>
-                            <TextBlock Text="DIAG" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button x:Name="ViewModeToggle"
-                            Click="ViewModeToggle_Click"
-                            Style="{StaticResource SpeedButtonStyle}"
-                            ToolTipService.ToolTip="Toggle Cards/Tree View">
-                        <FontIcon Glyph="&#xE8FD;" FontSize="14" FontFamily="Segoe MDL2 Assets"/>
-                    </Button>
-
-                    <Button x:Name="SettingsButton"
-                            Style="{StaticResource SpeedButtonStyle}"
-                            VerticalAlignment="Center"
-                            MinWidth="32"
-                            Padding="0"
-                            Margin="0">
-                        <FontIcon Glyph="&#xE713;" FontSize="16" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <Button.Flyout>
-                             <Flyout Placement="BottomEdgeAlignedLeft">
-                                <StackPanel Spacing="12" MinWidth="220">
-                                    <TextBlock Text="Hardware Display" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
-                                    <ToggleSwitch Header="Motherboard" IsOn="{x:Bind ViewModel.ShowMotherboard, Mode=TwoWay}"/>
-                                    <ToggleSwitch Header="CPU" IsOn="{x:Bind ViewModel.ShowCPU, Mode=TwoWay}"/>
-                                    <ToggleSwitch Header="Memory" IsOn="{x:Bind ViewModel.ShowMemory, Mode=TwoWay}"/>
-                                    <ToggleSwitch Header="GPU" IsOn="{x:Bind ViewModel.ShowGPU, Mode=TwoWay}"/>
-                                    <ToggleSwitch Header="Storage" IsOn="{x:Bind ViewModel.ShowStorage, Mode=TwoWay}"/>
-                                    <ToggleSwitch Header="Network" IsOn="{x:Bind ViewModel.ShowNetwork, Mode=TwoWay}"/>
-                                    <ToggleSwitch Header="Controller" IsOn="{x:Bind ViewModel.ShowController, Mode=TwoWay}"/>
-                                    <ToggleSwitch Header="Battery" IsOn="{x:Bind ViewModel.ShowBattery, Mode=TwoWay}"/>
-                                    <ToggleSwitch Header="Power Supply" IsOn="{x:Bind ViewModel.ShowPsu, Mode=TwoWay}"/>
-                                    
-                                    <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" Margin="0,4"/>
-                                    
-                                    <TextBlock Text="Temperature Unit" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
-                                    <StackPanel Orientation="Horizontal" Spacing="16">
-                                        <RadioButton Content="Celsius" GroupName="TempUnit" IsChecked="{x:Bind ViewModel.IsCelsius, Mode=TwoWay}"/>
-                                        <RadioButton Content="Fahrenheit" GroupName="TempUnit" IsChecked="{x:Bind ViewModel.IsFahrenheit, Mode=TwoWay}"/>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Flyout>
-                        </Button.Flyout>
-                    </Button>
-                </StackPanel>
+                <Button x:Name="SettingsButton"
+                        Grid.Column="2"
+                        Style="{StaticResource SpeedButtonStyle}"
+                        CornerRadius="8"
+                        MinWidth="40"
+                        Padding="8,0"
+                        ToolTipService.ToolTip="Settings">
+                    <FontIcon Glyph="&#xE713;" FontSize="18"/>
+                    <Button.Flyout>
+                        <MenuFlyout Placement="BottomEdgeAlignedRight">
+                            <MenuFlyoutSubItem Text="Refresh Speed">
+                                <MenuFlyoutSubItem.Icon>
+                                    <FontIcon Glyph="&#xE945;"/>
+                                </MenuFlyoutSubItem.Icon>
+                                <ToggleMenuFlyoutItem Text="Ultra (250ms)" 
+                                                      IsChecked="{x:Bind ViewModel.IsUltraActive, Mode=OneWay}"
+                                                      Command="{x:Bind ViewModel.ChangeSpeedCommand}"
+                                                      CommandParameter="250"/>
+                                <ToggleMenuFlyoutItem Text="Fast (500ms)" 
+                                                      IsChecked="{x:Bind ViewModel.IsFastActive, Mode=OneWay}"
+                                                      Command="{x:Bind ViewModel.ChangeSpeedCommand}"
+                                                      CommandParameter="500"/>
+                                <ToggleMenuFlyoutItem Text="Normal (1000ms)" 
+                                                      IsChecked="{x:Bind ViewModel.IsNormalActive, Mode=OneWay}"
+                                                      Command="{x:Bind ViewModel.ChangeSpeedCommand}"
+                                                      CommandParameter="1000"/>
+                            </MenuFlyoutSubItem>
+                            
+                            <MenuFlyoutSubItem Text="Backdrop Style">
+                                <MenuFlyoutSubItem.Icon>
+                                    <FontIcon Glyph="&#xE7F4;"/>
+                                </MenuFlyoutSubItem.Icon>
+                                <ToggleMenuFlyoutItem Text="Acrylic" 
+                                                      IsChecked="{x:Bind ViewModel.IsBackdropAcrylic, Mode=OneWay}"
+                                                      Command="{x:Bind ViewModel.ChangeBackdropCommand}"
+                                                      CommandParameter="0"/>
+                                <ToggleMenuFlyoutItem Text="Mica" 
+                                                      IsChecked="{x:Bind ViewModel.IsBackdropMica, Mode=OneWay}"
+                                                      Command="{x:Bind ViewModel.ChangeBackdropCommand}"
+                                                      CommandParameter="1"/>
+                                <ToggleMenuFlyoutItem Text="Mica Alt" 
+                                                      IsChecked="{x:Bind ViewModel.IsBackdropMicaAlt, Mode=OneWay}"
+                                                      Command="{x:Bind ViewModel.ChangeBackdropCommand}"
+                                                      CommandParameter="2"/>
+                            </MenuFlyoutSubItem>
+                            
+                            <MenuFlyoutSubItem Text="View Mode">
+                                <MenuFlyoutSubItem.Icon>
+                                    <FontIcon Glyph="&#xE8FD;"/>
+                                </MenuFlyoutSubItem.Icon>
+                                <ToggleMenuFlyoutItem Text="Cards" 
+                                                      IsChecked="{x:Bind ViewModel.IsCardsView, Mode=OneWay}"
+                                                      Command="{x:Bind ViewModel.SetViewModeCommand}"
+                                                      CommandParameter="0"/>
+                                <ToggleMenuFlyoutItem Text="Tree" 
+                                                      IsChecked="{x:Bind ViewModel.IsTreeView, Mode=OneWay}"
+                                                      Command="{x:Bind ViewModel.SetViewModeCommand}"
+                                                      CommandParameter="1"/>
+                            </MenuFlyoutSubItem>
+                            
+                            <MenuFlyoutSubItem Text="Temperature Unit">
+                                <MenuFlyoutSubItem.Icon>
+                                    <FontIcon Glyph="&#xE9CA;"/>
+                                </MenuFlyoutSubItem.Icon>
+                                <ToggleMenuFlyoutItem Text="Celsius (°C)" 
+                                                      IsChecked="{x:Bind ViewModel.IsCelsius, Mode=OneWay}"
+                                                      Command="{x:Bind ViewModel.SetTemperatureUnitCommand}"
+                                                      CommandParameter="0"/>
+                                <ToggleMenuFlyoutItem Text="Fahrenheit (°F)" 
+                                                      IsChecked="{x:Bind ViewModel.IsFahrenheit, Mode=OneWay}"
+                                                      Command="{x:Bind ViewModel.SetTemperatureUnitCommand}"
+                                                      CommandParameter="1"/>
+                            </MenuFlyoutSubItem>
+                            
+                            <MenuFlyoutSeparator/>
+                            
+                            <MenuFlyoutSubItem Text="Hardware Display">
+                                <MenuFlyoutSubItem.Icon>
+                                    <FontIcon Glyph="&#xE950;"/>
+                                </MenuFlyoutSubItem.Icon>
+                                <ToggleMenuFlyoutItem Text="CPU" IsChecked="{x:Bind ViewModel.ShowCPU, Mode=TwoWay}"/>
+                                <ToggleMenuFlyoutItem Text="GPU" IsChecked="{x:Bind ViewModel.ShowGPU, Mode=TwoWay}"/>
+                                <ToggleMenuFlyoutItem Text="Motherboard" IsChecked="{x:Bind ViewModel.ShowMotherboard, Mode=TwoWay}"/>
+                                <ToggleMenuFlyoutItem Text="Memory" IsChecked="{x:Bind ViewModel.ShowMemory, Mode=TwoWay}"/>
+                                <ToggleMenuFlyoutItem Text="Storage" IsChecked="{x:Bind ViewModel.ShowStorage, Mode=TwoWay}"/>
+                                <ToggleMenuFlyoutItem Text="Network" IsChecked="{x:Bind ViewModel.ShowNetwork, Mode=TwoWay}"/>
+                                <ToggleMenuFlyoutItem Text="Controller" IsChecked="{x:Bind ViewModel.ShowController, Mode=TwoWay}"/>
+                                <ToggleMenuFlyoutItem Text="Battery" IsChecked="{x:Bind ViewModel.ShowBattery, Mode=TwoWay}"/>
+                                <ToggleMenuFlyoutItem Text="Power Supply" IsChecked="{x:Bind ViewModel.ShowPsu, Mode=TwoWay}"/>
+                            </MenuFlyoutSubItem>
+                            
+                            <MenuFlyoutSeparator/>
+                            
+                            <MenuFlyoutItem Text="Reset Min/Max Values" 
+                                            Command="{x:Bind ViewModel.ResetMinMaxCommand}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE845;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            
+                            <MenuFlyoutItem Text="Run Diagnostic" 
+                                            Command="{x:Bind ViewModel.RunDiagnosticCommand}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE9D9;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
             </Grid>
         </Border>
 
@@ -437,35 +438,81 @@
             <!-- Status card as ListView header so it scrolls with content -->
             <ListView.Header>
                 <Border Style="{StaticResource StatusCardStyle}" Margin="0,0,0,16">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0" Spacing="8">
-                            <TextBlock Text="System Status" FontSize="18" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding ViewModel.SystemStatusText, ElementName=RootWindow, Mode=OneWay}"
-                                      FontSize="14"
-                                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <TextBlock Text="{Binding ViewModel.UpsIndicator, ElementName=RootWindow, Mode=OneWay}"
-                                          FontSize="12"
-                                          Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                          FontWeight="SemiBold"/>
-                                <TextBlock Text="{Binding ViewModel.BackdropIndicator, ElementName=RootWindow, Mode=OneWay}"
-                                          FontSize="12"
-                                          Foreground="{ThemeResource TextFillColorTertiaryBrush}"
-                                          FontWeight="SemiBold"/>
+                    <StackPanel Spacing="12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <StackPanel Grid.Column="0" Spacing="4">
+                                <TextBlock Text="System Status" FontSize="16" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding ViewModel.SystemStatusText, ElementName=RootWindow, Mode=OneWay}"
+                                          FontSize="13"
+                                          Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                          TextWrapping="Wrap"/>
                             </StackPanel>
-                        </StackPanel>
-
-                        <ProgressRing Grid.Column="1"
-                                     IsActive="{Binding ViewModel.IsUIBusy, ElementName=RootWindow, Mode=OneWay}"
-                                     Width="32"
-                                     Height="32"
-                                     VerticalAlignment="Center"/>
-                    </Grid>
+                            
+                            <ProgressRing Grid.Column="1"
+                                          IsActive="{Binding ViewModel.IsUIBusy, ElementName=RootWindow, Mode=OneWay}"
+                                          Width="24"
+                                          Height="24"
+                                          VerticalAlignment="Center"/>
+                        </Grid>
+                        
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <Border Grid.Column="0"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    CornerRadius="6"
+                                    Padding="12,8">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{Binding ViewModel.ActiveSpeedButton, ElementName=RootWindow, Mode=OneWay}"
+                                              FontSize="12"
+                                              FontWeight="SemiBold"
+                                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                    <TextBlock Text="Refresh Rate"
+                                              FontSize="10"
+                                              Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+                                </StackPanel>
+                            </Border>
+                            
+                            <Border Grid.Column="1"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    CornerRadius="6"
+                                    Padding="12,8">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{Binding ViewModel.UpsIndicator, ElementName=RootWindow, Mode=OneWay}"
+                                              FontSize="12"
+                                              FontWeight="SemiBold"
+                                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                    <TextBlock Text="Update Rate"
+                                              FontSize="10"
+                                              Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+                                </StackPanel>
+                            </Border>
+                            
+                            <Border Grid.Column="2"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    CornerRadius="6"
+                                    Padding="12,8">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{Binding ViewModel.BackdropIndicator, ElementName=RootWindow, Mode=OneWay}"
+                                              FontSize="12"
+                                              FontWeight="SemiBold"
+                                              Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                    <TextBlock Text="Theme"
+                                              FontSize="10"
+                                              Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
                 </Border>
             </ListView.Header>
 
