@@ -242,6 +242,76 @@ namespace HardwareMonitorWinUI3.Core
             return true;
         }
 
+        private void OnExpansionStateChanged(object? sender, string key)
+        {
+            var settings = _settingsService.Settings;
+            
+            if (key.StartsWith("group:"))
+            {
+                var groupKey = key.Substring(6);
+                var collapsed = settings.CollapsedSensorGroups;
+                
+                if (collapsed.Contains(groupKey))
+                    collapsed.Remove(groupKey);
+                else
+                    collapsed.Add(groupKey);
+            }
+            else
+            {
+                var collapsed = settings.CollapsedHardwareNodes;
+                
+                if (collapsed.Contains(key))
+                    collapsed.Remove(key);
+                else
+                    collapsed.Add(key);
+            }
+            
+            ScheduleSave();
+        }
+        
+        private void RestoreExpansionStates()
+        {
+            var settings = _settingsService.Settings;
+            var collapsedHardware = settings.CollapsedHardwareNodes;
+            var collapsedGroups = settings.CollapsedSensorGroups;
+
+            foreach (var node in _hardwareService.HardwareNodes)
+            {
+                if (collapsedHardware.Contains(node.Name))
+                {
+                    node.IsExpanded = false;
+                }
+
+                foreach (var group in node.SensorGroups)
+                {
+                    var groupKey = $"{node.Name}|{group.CategoryName}";
+                    if (collapsedGroups.Contains(groupKey))
+                    {
+                        group.IsExpanded = false;
+                    }
+                }
+
+                foreach (var subNode in node.SubHardware)
+                {
+                    if (collapsedHardware.Contains(subNode.Name))
+                    {
+                        subNode.IsExpanded = false;
+                    }
+
+                    foreach (var group in subNode.SensorGroups)
+                    {
+                        var groupKey = $"{subNode.Name}|{group.CategoryName}";
+                        if (collapsedGroups.Contains(groupKey))
+                        {
+                            group.IsExpanded = false;
+                        }
+                    }
+                }
+            }
+
+            _hardwareService.ExpansionStateChanged += OnExpansionStateChanged;
+        }
+
         public bool IsInitialized => _hardwareService.IsInitialized;
         public int CurrentInterval => _hardwareService.CurrentInterval;
 
@@ -371,6 +441,8 @@ namespace HardwareMonitorWinUI3.Core
                 SystemStatusText = UIConstants.GetBuildingInterfaceMessage();
 
                 await _hardwareService.BuildHardwareStructureAsync(_cts.Token);
+
+                RestoreExpansionStates();
 
                 if (_settingsService.Settings.RefreshInterval != UIConstants.UltraInterval)
                 {

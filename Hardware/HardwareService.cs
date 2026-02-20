@@ -49,6 +49,7 @@ namespace HardwareMonitorWinUI3.Hardware
 
         public event EventHandler? TimerTick;
         public event EventHandler<int>? UpsUpdated;
+        public event EventHandler<string>? ExpansionStateChanged;
 
         public ObservableCollection<HardwareNode> HardwareNodes { get; } = new();
 
@@ -193,6 +194,7 @@ namespace HardwareMonitorWinUI3.Hardware
                                 Name = hardware.Name,
                                 Category = hardware.HardwareType.ToCategory()
                             };
+                            hardwareNode.ExpansionStateChanged += OnHardwareNodeExpansionChanged;
                             _hardwareMap[hardwareNode] = hardware;
                             ProcessSensors(hardware, hardwareNode);
                         }
@@ -210,6 +212,7 @@ namespace HardwareMonitorWinUI3.Hardware
                                     Name = displayName,
                                     Category = subHardware.HardwareType.ToCategory()
                                 };
+                                subNode.ExpansionStateChanged += OnHardwareNodeExpansionChanged;
                                 _hardwareMap[subNode] = subHardware;
 
                                 ProcessSensors(subHardware, subNode);
@@ -435,6 +438,11 @@ namespace HardwareMonitorWinUI3.Hardware
         public void StopTimer()
         {
             _timer?.Stop();
+        }
+
+        private void OnHardwareNodeExpansionChanged(object? sender, string key)
+        {
+            ExpansionStateChanged?.Invoke(this, key);
         }
 
         public void ChangeInterval(int newInterval)

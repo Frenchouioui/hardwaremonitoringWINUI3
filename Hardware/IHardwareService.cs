@@ -18,6 +18,7 @@ namespace HardwareMonitorWinUI3.Hardware
 
         event EventHandler? TimerTick;
         event EventHandler<int>? UpsUpdated;
+        event EventHandler<string>? ExpansionStateChanged;
 
         Task InitializeAsync(CancellationToken cancellationToken = default);
         Task BuildHardwareStructureAsync(CancellationToken cancellationToken = default);

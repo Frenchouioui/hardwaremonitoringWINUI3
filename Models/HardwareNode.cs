@@ -10,6 +10,12 @@ namespace HardwareMonitorWinUI3.Models
 {
     public class HardwareNode : BaseViewModel
     {
+        #region Events
+
+        public event EventHandler<string>? ExpansionStateChanged;
+
+        #endregion
+
         #region Category Order Constants
 
         private const int VoltageOrder = 1;
@@ -49,7 +55,13 @@ namespace HardwareMonitorWinUI3.Models
         public bool IsExpanded
         {
             get => _isExpanded;
-            set => SetProperty(ref _isExpanded, value);
+            set
+            {
+                if (SetProperty(ref _isExpanded, value))
+                {
+                    ExpansionStateChanged?.Invoke(this, Name);
+                }
+            }
         }
 
         public HardwareCategory Category { get; init; }
@@ -100,6 +112,7 @@ namespace HardwareMonitorWinUI3.Models
         {
             foreach (var group in SensorGroups)
             {
+                group.ExpansionStateChanged -= OnSensorGroupExpansionChanged;
                 group.Dispose();
             }
             SensorGroups.Clear();
@@ -114,8 +127,11 @@ namespace HardwareMonitorWinUI3.Models
                 var sensorGroup = new SensorGroup
                 {
                     CategoryName = sensorCategoryGroup.Key,
-                    CategoryIcon = firstSensorInCategory.CategoryIcon
+                    CategoryIcon = firstSensorInCategory.CategoryIcon,
+                    ParentHardwareName = Name
                 };
+                
+                sensorGroup.ExpansionStateChanged += OnSensorGroupExpansionChanged;
 
                 foreach (var sensor in sensorCategoryGroup)
                 {
@@ -124,6 +140,11 @@ namespace HardwareMonitorWinUI3.Models
 
                 SensorGroups.Add(sensorGroup);
             }
+        }
+        
+        private void OnSensorGroupExpansionChanged(object? sender, string key)
+        {
+            ExpansionStateChanged?.Invoke(this, $"group:{key}");
         }
 
         protected override void DisposeManaged()

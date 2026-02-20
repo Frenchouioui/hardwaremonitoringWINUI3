@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Collections.Generic;
 
 namespace HardwareMonitorWinUI3.Models
 {
@@ -71,6 +72,9 @@ namespace HardwareMonitorWinUI3.Models
         public bool ShowBattery { get => Interlocked.CompareExchange(ref _showBattery, 0, 0) == 1; set => Interlocked.Exchange(ref _showBattery, value ? 1 : 0); }
         public bool ShowPsu { get => Interlocked.CompareExchange(ref _showPsu, 0, 0) == 1; set => Interlocked.Exchange(ref _showPsu, value ? 1 : 0); }
 
+        public List<string> CollapsedHardwareNodes { get; set; } = new();
+        public List<string> CollapsedSensorGroups { get; set; } = new();
+
         public ViewMode ViewMode
         {
             get => (ViewMode)Interlocked.CompareExchange(ref _viewMode, 0, 0);
@@ -100,7 +104,9 @@ namespace HardwareMonitorWinUI3.Models
                     ViewMode = (ViewMode)_viewMode,
                     TemperatureUnit = (TemperatureUnit)_temperatureUnit,
                     ShowBattery = _showBattery == 1,
-                    ShowPsu = _showPsu == 1
+                    ShowPsu = _showPsu == 1,
+                    CollapsedHardwareNodes = new List<string>(CollapsedHardwareNodes),
+                    CollapsedSensorGroups = new List<string>(CollapsedSensorGroups)
                 };
             }
         }

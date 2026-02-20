@@ -6,9 +6,16 @@ namespace HardwareMonitorWinUI3.Models
 {
     public class SensorGroup : BaseViewModel
     {
+        #region Events
+
+        public event EventHandler<string>? ExpansionStateChanged;
+
+        #endregion
+
         private string _categoryName = string.Empty;
         private string _categoryIcon = string.Empty;
         private bool _isExpanded = true;
+        private string _parentHardwareName = string.Empty;
 
         public SensorGroup()
         {
@@ -30,7 +37,20 @@ namespace HardwareMonitorWinUI3.Models
         public bool IsExpanded
         {
             get => _isExpanded;
-            set => SetProperty(ref _isExpanded, value);
+            set
+            {
+                if (SetProperty(ref _isExpanded, value))
+                {
+                    var key = $"{_parentHardwareName}|{CategoryName}";
+                    ExpansionStateChanged?.Invoke(this, key);
+                }
+            }
+        }
+
+        public string ParentHardwareName
+        {
+            get => _parentHardwareName;
+            set => SetProperty(ref _parentHardwareName, value);
         }
 
         public int SensorCount => Sensors.Count;
