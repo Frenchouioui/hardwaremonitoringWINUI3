@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -14,7 +15,7 @@ using HardwareMonitorWinUI3.UI;
 
 namespace HardwareMonitorWinUI3.Core
 {
-    public class AppViewModel : BaseViewModel
+    public sealed class AppViewModel : BaseViewModel
     {
         #region Events
 
@@ -57,40 +58,43 @@ namespace HardwareMonitorWinUI3.Core
 
         private int _pendingSaveCount;
         private readonly object _saveLock = new();
+        private int _filterUpdateVersion;
+        private int _lastAppliedVersion;
 
         #endregion
 
         #region Properties
 
-        private readonly ObservableCollection<HardwareNode> _filteredHardwareNodes;
+        private readonly ObservableCollection<HardwareNode> _filteredHardwareNodes = new();
         public ObservableCollection<HardwareNode> HardwareNodes => _filteredHardwareNodes;
 
         private void UpdateFilteredHardwareNodes()
         {
-            HardwareNode[] nodesSnapshot;
-            lock (_saveLock)
-            {
-                nodesSnapshot = _hardwareService.HardwareNodes.ToArray();
-            }
+            var currentVersion = Interlocked.Increment(ref _filterUpdateVersion);
+
+            HardwareNode[] nodesSnapshot = _hardwareService.HardwareNodes.ToArray();
 
             var sortedNodes = nodesSnapshot
                 .Where(ShouldShowHardwareNode)
                 .OrderBy(n => (int)n.Category)
-                .ToList();
+                .ToArray();
 
-            bool dispatched = _dispatch(() =>
+            _dispatch(() =>
             {
+                if (currentVersion < _lastAppliedVersion)
+                    return;
+
+                _lastAppliedVersion = currentVersion;
+
+                if (_filteredHardwareNodes.SequenceEqual(sortedNodes))
+                    return;
+
                 _filteredHardwareNodes.Clear();
                 foreach (var node in sortedNodes)
                 {
                     _filteredHardwareNodes.Add(node);
                 }
             });
-
-            if (!dispatched)
-            {
-                _logger.LogWarning("Failed to dispatch UpdateFilteredHardwareNodes");
-            }
         }
 
         private bool ShouldShowHardwareNode(HardwareNode hardwareNode)
@@ -208,7 +212,7 @@ namespace HardwareMonitorWinUI3.Core
                 }
             }
         }
-        
+
         public bool IsCelsius
         {
             get => _temperatureUnit == TemperatureUnit.Celsius;
@@ -220,7 +224,7 @@ namespace HardwareMonitorWinUI3.Core
                 }
             }
         }
-        
+
         public bool IsFahrenheit
         {
             get => _temperatureUnit == TemperatureUnit.Fahrenheit;
@@ -260,12 +264,12 @@ namespace HardwareMonitorWinUI3.Core
         private void OnExpansionStateChanged(object? sender, string key)
         {
             var settings = _settingsService.Settings;
-            
+
             if (key.StartsWith("group:"))
             {
                 var groupKey = key.Substring(6);
                 var collapsed = settings.CollapsedSensorGroups;
-                
+
                 if (collapsed.Contains(groupKey))
                     collapsed.Remove(groupKey);
                 else
@@ -274,16 +278,16 @@ namespace HardwareMonitorWinUI3.Core
             else
             {
                 var collapsed = settings.CollapsedHardwareNodes;
-                
+
                 if (collapsed.Contains(key))
                     collapsed.Remove(key);
                 else
                     collapsed.Add(key);
             }
-            
+
             ScheduleSave();
         }
-        
+
         private void RestoreExpansionStates()
         {
             var settings = _settingsService.Settings;
@@ -442,7 +446,7 @@ namespace HardwareMonitorWinUI3.Core
 
         #region Commands
 
-public IRelayCommand<object?> ChangeSpeedCommand { get; }
+        public IRelayCommand<object?> ChangeSpeedCommand { get; }
         public IRelayCommand ResetMinMaxCommand { get; }
         public IRelayCommand RunDiagnosticCommand { get; }
         public IRelayCommand<object?> ChangeBackdropCommand { get; }
@@ -465,7 +469,6 @@ public IRelayCommand<object?> ChangeSpeedCommand { get; }
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dispatch = dispatcher ?? (action => { action(); return true; });
-            _filteredHardwareNodes = new ObservableCollection<HardwareNode>();
 
             ChangeSpeedCommand = new RelayCommand<object?>(ExecuteChangeSpeed);
             ResetMinMaxCommand = new RelayCommand(ExecuteResetMinMax);
@@ -501,7 +504,7 @@ public IRelayCommand<object?> ChangeSpeedCommand { get; }
             _showPsu = settings.ShowPsu;
             _currentViewMode = settings.ViewMode;
             _temperatureUnit = settings.TemperatureUnit;
-            
+
             SensorExtensions.CurrentTemperatureUnit = _temperatureUnit;
 
             _backdropIndicator = UIExtensions.GetBackdropDisplayName(settings.BackdropStyle);
@@ -798,7 +801,7 @@ public IRelayCommand<object?> ChangeSpeedCommand { get; }
             UpsIndicator = UIConstants.GetUpsIndicator(currentUps, _hardwareService.CurrentInterval);
         }
 
-        private void OnHardwareNodesChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void OnHardwareNodesChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             UpdateFilteredHardwareNodes();
         }

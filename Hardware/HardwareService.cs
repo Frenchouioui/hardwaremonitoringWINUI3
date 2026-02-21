@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using LibreHardwareMonitor.Hardware;
@@ -36,6 +37,14 @@ namespace HardwareMonitorWinUI3.Hardware
 
         private int _detectedHardwareCount;
         private int _detectedStorageCount;
+
+        [ThreadStatic]
+        private static StringBuilder? _keyBuilder;
+
+        private static StringBuilder GetKeyBuilder()
+        {
+            return _keyBuilder ??= new StringBuilder(256);
+        }
 
         #endregion
 
@@ -353,19 +362,26 @@ namespace HardwareMonitorWinUI3.Hardware
             }
         }
 
-        private static readonly string NaString = "N/A";
+        private const string NaString = "N/A";
 
         private static void UpdateNodeSensors(HardwareNode node, IHardware hardware)
         {
             var sensors = hardware.Sensors;
             var cache = node.SensorCache;
             var naString = NaString;
+            var keyBuilder = GetKeyBuilder();
 
             foreach (var sensor in sensors)
             {
                 var sensorName = sensor.Name;
                 var sensorType = sensor.SensorType;
-                var key = $"{sensorName}|{sensorType}";
+                var sensorTypeStr = sensorType.ToString();
+
+                keyBuilder.Clear();
+                keyBuilder.Append(sensorName);
+                keyBuilder.Append('|');
+                keyBuilder.Append(sensorTypeStr);
+                var key = keyBuilder.ToString();
 
                 if (cache.TryGetValue(key, out var sensorData))
                 {
@@ -374,30 +390,28 @@ namespace HardwareMonitorWinUI3.Hardware
                     {
                         var rawValue = sensorValue.Value;
 
-                        if (!sensorData.RawValue.HasValue || 
+                        if (!sensorData.RawValue.HasValue ||
                             Math.Abs(sensorData.RawValue.Value - rawValue) > 0.001f)
                         {
                             sensorData.RawValue = rawValue;
-                            var newFormattedValue = sensor.ToFormattedString();
-                            sensorData.Value = newFormattedValue;
+                            sensorData.Value = sensor.ToFormattedString();
 
-                            if (sensorType == SensorType.Throughput)
+                            switch (sensorType)
                             {
-                                sensorData.UpdateMinMaxThroughput(rawValue, sensorName ?? "");
-                            }
-                            else if (sensorType == SensorType.TimeSpan)
-                            {
-                                sensorData.UpdateMinMaxTimeSpan(rawValue);
-                            }
-                            else if (sensorType == SensorType.Temperature)
-                            {
-                                sensorData.UpdateMinMaxTemperature(rawValue);
-                            }
-                            else
-                            {
-                                var unit = sensorType.GetSensorUnit();
-                                var precision = sensorType.GetSensorPrecision();
-                                sensorData.UpdateMinMax(rawValue, unit, precision);
+                                case SensorType.Throughput:
+                                    sensorData.UpdateMinMaxThroughput(rawValue, sensorName ?? "");
+                                    break;
+                                case SensorType.TimeSpan:
+                                    sensorData.UpdateMinMaxTimeSpan(rawValue);
+                                    break;
+                                case SensorType.Temperature:
+                                    sensorData.UpdateMinMaxTemperature(rawValue);
+                                    break;
+                                default:
+                                    var unit = SensorExtensions.GetSensorUnit(sensorType);
+                                    var precision = SensorExtensions.GetSensorPrecision(sensorType);
+                                    sensorData.UpdateMinMax(rawValue, unit, precision);
+                                    break;
                             }
                         }
                     }
@@ -583,7 +597,7 @@ namespace HardwareMonitorWinUI3.Hardware
                 if (_computer == null)
                     return "Computer not initialized";
 
-                return await Task.Run(() => 
+                return await Task.Run(() =>
                     DiagnosticHelper.GenerateHardwareDiagnosticReport(_computer, _logger))
                     .ConfigureAwait(false);
             }
