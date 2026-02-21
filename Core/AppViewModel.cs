@@ -95,6 +95,9 @@ namespace HardwareMonitorWinUI3.Core
 
         private bool ShouldShowHardwareNode(HardwareNode hardwareNode)
         {
+            if (_settingsService.Settings.HiddenHardwareNames.Contains(hardwareNode.Name))
+                return false;
+
             return hardwareNode.Category switch
             {
                 HardwareCategory.Cpu => ShowCPU,
@@ -423,16 +426,30 @@ namespace HardwareMonitorWinUI3.Core
             }
         }
 
+        public ThreadSafeStringSet HiddenHardwareNames => _settingsService.Settings.HiddenHardwareNames;
+
+        public List<string> GetHiddenHardwareNamesList()
+        {
+            return _settingsService.Settings.HiddenHardwareNames.ToList();
+        }
+
+        public bool IsHardwareHidden(string hardwareName)
+        {
+            return _settingsService.Settings.HiddenHardwareNames.Contains(hardwareName);
+        }
+
         #endregion
 
         #region Commands
 
-        public IRelayCommand<object?> ChangeSpeedCommand { get; }
+public IRelayCommand<object?> ChangeSpeedCommand { get; }
         public IRelayCommand ResetMinMaxCommand { get; }
         public IRelayCommand RunDiagnosticCommand { get; }
         public IRelayCommand<object?> ChangeBackdropCommand { get; }
         public IRelayCommand<object?> SetViewModeCommand { get; }
         public IRelayCommand<object?> SetTemperatureUnitCommand { get; }
+        public IRelayCommand<string> HideHardwareCommand { get; }
+        public IRelayCommand<string> ShowHardwareCommand { get; }
 
         #endregion
 
@@ -456,6 +473,8 @@ namespace HardwareMonitorWinUI3.Core
             ChangeBackdropCommand = new RelayCommand<object?>(ExecuteChangeBackdrop);
             SetViewModeCommand = new RelayCommand<object?>(ExecuteSetViewMode);
             SetTemperatureUnitCommand = new RelayCommand<object?>(ExecuteSetTemperatureUnit);
+            HideHardwareCommand = new RelayCommand<string>(ExecuteHideHardware);
+            ShowHardwareCommand = new RelayCommand<string>(ExecuteShowHardware);
 
             _hardwareService.TimerTick += OnTimerTick;
             _hardwareService.UpsUpdated += OnUpsUpdated;
@@ -646,6 +665,26 @@ namespace HardwareMonitorWinUI3.Core
             {
                 TemperatureUnit = (TemperatureUnit)index;
             }
+        }
+
+        private void ExecuteHideHardware(string? hardwareName)
+        {
+            if (string.IsNullOrEmpty(hardwareName)) return;
+
+            _settingsService.Settings.HiddenHardwareNames.Add(hardwareName);
+            ScheduleSave();
+            UpdateFilteredHardwareNodes();
+            OnPropertyChanged(nameof(HiddenHardwareNames));
+        }
+
+        private void ExecuteShowHardware(string? hardwareName)
+        {
+            if (string.IsNullOrEmpty(hardwareName)) return;
+
+            _settingsService.Settings.HiddenHardwareNames.Remove(hardwareName);
+            ScheduleSave();
+            UpdateFilteredHardwareNodes();
+            OnPropertyChanged(nameof(HiddenHardwareNames));
         }
 
         #endregion

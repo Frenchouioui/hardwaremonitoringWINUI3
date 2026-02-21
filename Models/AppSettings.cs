@@ -103,6 +103,7 @@ namespace HardwareMonitorWinUI3.Models
 
         private readonly ThreadSafeStringSet _collapsedHardwareNodes = new();
         private readonly ThreadSafeStringSet _collapsedSensorGroups = new();
+        private readonly ThreadSafeStringSet _hiddenHardwareNames = new();
 
         public int WindowX { get => _windowX; set => _windowX = value; }
         public int WindowY { get => _windowY; set => _windowY = value; }
@@ -142,6 +143,8 @@ namespace HardwareMonitorWinUI3.Models
         public ThreadSafeStringSet CollapsedHardwareNodes => _collapsedHardwareNodes;
         [JsonIgnore]
         public ThreadSafeStringSet CollapsedSensorGroups => _collapsedSensorGroups;
+        [JsonIgnore]
+        public ThreadSafeStringSet HiddenHardwareNames => _hiddenHardwareNames;
 
         [System.Text.Json.Serialization.JsonPropertyName("collapsedHardwareNodes")]
         public List<string> CollapsedHardwareNodesJson
@@ -155,6 +158,13 @@ namespace HardwareMonitorWinUI3.Models
         {
             get => _collapsedSensorGroups.ToList();
             set => _collapsedSensorGroups.InitializeFromList(value);
+        }
+
+        [System.Text.Json.Serialization.JsonPropertyName("hiddenHardwareNames")]
+        public List<string> HiddenHardwareNamesJson
+        {
+            get => _hiddenHardwareNames.ToList();
+            set => _hiddenHardwareNames.InitializeFromList(value);
         }
 
         public ViewMode ViewMode
@@ -190,6 +200,7 @@ namespace HardwareMonitorWinUI3.Models
                 };
                 snapshot._collapsedHardwareNodes.InitializeFromList(_collapsedHardwareNodes.ToList());
                 snapshot._collapsedSensorGroups.InitializeFromList(_collapsedSensorGroups.ToList());
+                snapshot._hiddenHardwareNames.InitializeFromList(_hiddenHardwareNames.ToList());
                 return snapshot;
             }
         }

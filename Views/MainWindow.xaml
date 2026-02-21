@@ -23,7 +23,18 @@
                           Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                           BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
                           BorderThickness="1"
-                          Margin="0,0,0,8">
+                          Margin="0,0,0,8"
+                          Tag="{x:Bind Name, Mode=OneWay}"
+                          RightTapped="HardwareCard_RightTapped">
+                    <FlyoutBase.AttachedFlyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Text="Hide this item" Click="HideHardware_Click">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE711;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </FlyoutBase.AttachedFlyout>
                     <Expander.Header>
                         <Grid Margin="0,4">
                             <Grid.ColumnDefinitions>
@@ -420,6 +431,24 @@
                                         <FontIcon Glyph="&#xE9D9;"/>
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
+                                
+                                <MenuFlyoutSeparator/>
+                                
+                                <MenuFlyoutSubItem Text="Hidden Items">
+                                    <MenuFlyoutSubItem.Icon>
+                                        <FontIcon Glyph="&#xE711;"/>
+                                    </MenuFlyoutSubItem.Icon>
+                                    <MenuFlyoutItem Text="View hidden items..." Click="ShowHiddenHardware_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE890;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Restore all" Click="RestoreAllHidden_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE845;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                </MenuFlyoutSubItem>
                             </MenuFlyout>
                         </Button.Flyout>
                     </Button>
@@ -528,7 +557,18 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:HardwareNode">
-                    <Border Style="{StaticResource HardwareCardStyle}">
+                    <Border Style="{StaticResource HardwareCardStyle}"
+                            Tag="{x:Bind Name, Mode=OneWay}"
+                            RightTapped="HardwareCard_RightTapped">
+                        <FlyoutBase.AttachedFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Text="Hide this item" Click="HideHardware_Click">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE711;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyout>
+                        </FlyoutBase.AttachedFlyout>
                         <StackPanel Spacing="12">
                             <Button Background="Transparent"
                                    BorderThickness="0"
