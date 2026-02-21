@@ -14,9 +14,9 @@
             <ui:BoolToAccentBrushConverter x:Key="BoolToAccentBrushConverter"/>
             <ui:ViewModeToVisibilityConverter x:Key="ViewModeToVisibilityConverter"/>
             <ui:TemperatureUnitToBoolConverter x:Key="TemperatureUnitToBoolConverter"/>
-            
+
             <DataTemplate x:Key="TreeHardwareNodeTemplate" x:DataType="models:HardwareNode">
-                <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}" 
+                <Expander IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}"
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Stretch"
                           CornerRadius="8"
@@ -42,16 +42,16 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <FontIcon Grid.Column="0" Glyph="{Binding CategoryIcon}" FontSize="16" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                            <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
-                            <TextBlock Grid.Column="2" Text="{Binding SensorCount}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="12,0,0,0" VerticalAlignment="Center"/>
+                            <FontIcon Grid.Column="0" Glyph="{x:Bind CategoryIcon, Mode=OneWay}" FontSize="16" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{x:Bind Name, Mode=OneWay}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="{x:Bind SensorCount, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="12,0,0,0" VerticalAlignment="Center"/>
                         </Grid>
                     </Expander.Header>
                     <Expander.Content>
-                        <ItemsControl ItemsSource="{Binding SensorGroups}">
+                        <ItemsControl ItemsSource="{x:Bind SensorGroups, Mode=OneWay}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="models:SensorGroup">
-                                    <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
+                                    <Expander IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}"
                                               HorizontalAlignment="Stretch"
                                               HorizontalContentAlignment="Stretch"
                                               CornerRadius="6"
@@ -63,8 +63,8 @@
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
-                                                <FontIcon Grid.Column="0" Glyph="{Binding CategoryIcon}" FontSize="14" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding CategoryName}" FontWeight="Medium" FontSize="13" VerticalAlignment="Center"/>
+                                                <FontIcon Grid.Column="0" Glyph="{x:Bind CategoryIcon, Mode=OneWay}" FontSize="14" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="{x:Bind CategoryName, Mode=OneWay}" FontWeight="Medium" FontSize="13" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Expander.Header>
                                         <Expander.Content>
@@ -83,7 +83,7 @@
                                                 <TextBlock Grid.Column="1" Text="Value" FontSize="11" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorTertiaryBrush}" MinWidth="100" TextAlignment="Right" Margin="0,0,0,8"/>
                                                 <TextBlock Grid.Column="2" Text="Min" FontSize="11" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorTertiaryBrush}" MinWidth="120" TextAlignment="Right" Margin="0,0,0,8"/>
                                                 <TextBlock Grid.Column="3" Text="Max" FontSize="11" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorTertiaryBrush}" MinWidth="120" TextAlignment="Right" Margin="0,0,0,8"/>
-                                                <ItemsControl Grid.Row="1" Grid.ColumnSpan="4" ItemsSource="{Binding Sensors}">
+                                                <ItemsControl Grid.Row="1" Grid.ColumnSpan="4" ItemsSource="{x:Bind Sensors, Mode=OneWay}">
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate x:DataType="models:SensorData">
                                                             <Grid Margin="0,2,0,0">
@@ -93,10 +93,10 @@
                                                                     <ColumnDefinition Width="Auto"/>
                                                                     <ColumnDefinition Width="Auto"/>
                                                                 </Grid.ColumnDefinitions>
-                                                                <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="12" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Name}" VerticalAlignment="Center"/>
-                                                                <TextBlock Grid.Column="1" Text="{Binding Value}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" MinWidth="100" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Value}" VerticalAlignment="Center"/>
-                                                                <TextBlock Grid.Column="2" Text="{Binding MinValue}" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" MinWidth="120" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding MinValue}" VerticalAlignment="Center"/>
-                                                                <TextBlock Grid.Column="3" Text="{Binding MaxValue}" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" MinWidth="120" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding MaxValue}" VerticalAlignment="Center"/>
+                                                                <TextBlock Grid.Column="0" Text="{x:Bind Name, Mode=OneWay}" FontSize="12" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" VerticalAlignment="Center"/>
+                                                                <TextBlock Grid.Column="1" Text="{x:Bind Value, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" MinWidth="100" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{x:Bind Value, Mode=OneWay}" VerticalAlignment="Center"/>
+                                                                <TextBlock Grid.Column="2" Text="{x:Bind MinValue, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" MinWidth="120" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{x:Bind MinValue, Mode=OneWay}" VerticalAlignment="Center"/>
+                                                                <TextBlock Grid.Column="3" Text="{x:Bind MaxValue, Mode=OneWay}" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" MinWidth="120" TextAlignment="Right" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{x:Bind MaxValue, Mode=OneWay}" VerticalAlignment="Center"/>
                                                             </Grid>
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
@@ -115,11 +115,11 @@
                 <Border Style="{StaticResource SensorCardStyle}">
                     <StackPanel Spacing="4">
                         <StackPanel Orientation="Horizontal" Spacing="6">
-                            <FontIcon Glyph="{Binding Icon}"
+                            <FontIcon Glyph="{x:Bind Icon, Mode=OneWay}"
                                       FontFamily="Segoe MDL2 Assets"
                                       FontSize="12"
                                       VerticalAlignment="Center"/>
-                            <TextBlock Text="{Binding Name}"
+                            <TextBlock Text="{x:Bind Name, Mode=OneWay}"
                                       FontSize="12"
                                       FontWeight="SemiBold"
                                       Foreground="{ThemeResource TextFillColorPrimaryBrush}"
@@ -127,30 +127,30 @@
                                       TextWrapping="NoWrap"
                                       MaxLines="1"
                                       VerticalAlignment="Center"
-                                      ToolTipService.ToolTip="{Binding Name}"/>
+                                      ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}"/>
                         </StackPanel>
 
-                        <TextBlock Text="{Binding Value}"
+                        <TextBlock Text="{x:Bind Value, Mode=OneWay}"
                                    FontSize="16"
                                    FontWeight="Bold"
                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                                    TextTrimming="CharacterEllipsis"
                                    TextWrapping="NoWrap"
-                                   ToolTipService.ToolTip="{Binding Value}"/>
+                                   ToolTipService.ToolTip="{x:Bind Value, Mode=OneWay}"/>
 
                         <StackPanel Spacing="2" Margin="0,4,0,0">
-                            <TextBlock Text="{Binding MinValue}" 
-                                      FontSize="11" 
+                            <TextBlock Text="{x:Bind MinValue, Mode=OneWay}"
+                                      FontSize="11"
                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                       TextTrimming="CharacterEllipsis"
                                       TextWrapping="NoWrap"
-                                      ToolTipService.ToolTip="{Binding MinValue}"/>
-                            <TextBlock Text="{Binding MaxValue}" 
-                                      FontSize="11" 
+                                      ToolTipService.ToolTip="{x:Bind MinValue, Mode=OneWay}"/>
+                            <TextBlock Text="{x:Bind MaxValue, Mode=OneWay}"
+                                      FontSize="11"
                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                       TextTrimming="CharacterEllipsis"
                                       TextWrapping="NoWrap"
-                                      ToolTipService.ToolTip="{Binding MaxValue}"/>
+                                      ToolTipService.ToolTip="{x:Bind MaxValue, Mode=OneWay}"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -165,7 +165,7 @@
                                HorizontalAlignment="Stretch"
                                HorizontalContentAlignment="Stretch"
                                Click="ToggleGroup_Click"
-                               Tag="{Binding}">
+                               Tag="{Binding Mode=OneWay}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
@@ -175,15 +175,15 @@
                                 </Grid.ColumnDefinitions>
 
                                 <FontIcon Grid.Column="0"
-                                         FontFamily="Segoe MDL2 Assets"
-                                         Glyph="{Binding IsExpanded, Converter={StaticResource BoolToExpandIconConverter}}"
-                                         FontSize="14"
-                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                         Margin="0,0,8,0"
-                                         VerticalAlignment="Center"/>
+                                          FontFamily="Segoe MDL2 Assets"
+                                          Glyph="{Binding IsExpanded, Converter={StaticResource BoolToExpandIconConverter}, Mode=OneWay}"
+                                          FontSize="14"
+                                          Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                          Margin="0,0,8,0"
+                                          VerticalAlignment="Center"/>
 
                                 <FontIcon Grid.Column="1"
-                                          Glyph="{Binding CategoryIcon}"
+                                          Glyph="{Binding CategoryIcon, Mode=OneWay}"
                                           FontFamily="Segoe MDL2 Assets"
                                           FontSize="16"
                                           Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
@@ -191,13 +191,13 @@
                                           VerticalAlignment="Center"/>
 
                                 <TextBlock Grid.Column="2"
-                                          Text="{Binding CategoryName}"
+                                          Text="{Binding CategoryName, Mode=OneWay}"
                                           FontSize="14"
                                           FontWeight="SemiBold"
                                           VerticalAlignment="Center"/>
 
                                 <TextBlock Grid.Column="3"
-                                           Text="{Binding SensorCount}"
+                                           Text="{Binding SensorCount, Mode=OneWay}"
                                            FontSize="12"
                                            FontWeight="SemiBold"
                                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
@@ -206,73 +206,8 @@
                             </Grid>
                         </Button>
 
-                        <ItemsControl ItemsSource="{Binding Sensors}"
-                                     Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <ItemsWrapGrid Orientation="Horizontal"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <StaticResource ResourceKey="SensorDataTemplate"/>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </Border>
-            </DataTemplate>
-
-            <DataTemplate x:Key="SubSensorGroupTemplate" x:DataType="models:SensorGroup">
-                <Border Style="{StaticResource SensorGroupStyle}">
-                    <StackPanel>
-                        <Button Background="Transparent"
-                                BorderThickness="0"
-                                Padding="0"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Stretch"
-                                Click="ToggleGroup_Click"
-                                Tag="{Binding}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <FontIcon Grid.Column="0"
-                                          FontFamily="Segoe MDL2 Assets"
-                                          Glyph="{Binding IsExpanded, Converter={StaticResource BoolToExpandIconConverter}}"
-                                          FontSize="12"
-                                          Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                          Margin="0,0,8,0"
-                                          VerticalAlignment="Center"/>
-
-                                <FontIcon Grid.Column="1"
-                                          Glyph="{Binding CategoryIcon}"
-                                          FontFamily="Segoe MDL2 Assets"
-                                          FontSize="14"
-                                          Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                          Margin="0,0,12,0"
-                                          VerticalAlignment="Center"/>
-
-                                <TextBlock Grid.Column="2"
-                                          Text="{Binding CategoryName}"
-                                          FontSize="13"
-                                          FontWeight="SemiBold"
-                                          VerticalAlignment="Center"/>
-
-                                <TextBlock Grid.Column="3"
-                                           Text="{Binding SensorCount}"
-                                           FontSize="11"
-                                           FontWeight="SemiBold"
-                                           Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                           VerticalAlignment="Center"
-                                           Margin="8,0,0,0"/>
-                            </Grid>
-                        </Button>
-
-                        <ItemsControl ItemsSource="{Binding Sensors}"
-                                     Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <ItemsControl ItemsSource="{Binding Sensors, Mode=OneWay}"
+                                     Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <ItemsWrapGrid Orientation="Horizontal"/>
@@ -293,7 +228,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Title bar area -->
         <Grid Grid.Row="0" Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -310,7 +244,6 @@
                        Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
         </Grid>
 
-        <!-- Header -->
         <Border Grid.Row="1">
             <Grid Margin="24,0">
                 <Grid.ColumnDefinitions>
@@ -346,7 +279,7 @@
                             </Flyout>
                         </Button.Flyout>
                     </Button>
-                
+
                     <Button x:Name="SettingsButton"
                             Style="{StaticResource SpeedButtonStyle}"
                             CornerRadius="8"
@@ -360,80 +293,80 @@
                                     <MenuFlyoutSubItem.Icon>
                                         <FontIcon Glyph="&#xE945;"/>
                                     </MenuFlyoutSubItem.Icon>
-                                    <RadioMenuFlyoutItem Text="Ultra (250ms)" 
+                                    <RadioMenuFlyoutItem Text="Ultra (250ms)"
                                                          IsChecked="{x:Bind ViewModel.IsUltraActive, Mode=OneWay}"
                                                          Command="{x:Bind ViewModel.ChangeSpeedCommand}"
                                                          CommandParameter="250"
                                                          GroupName="RefreshSpeed"/>
-                                    <RadioMenuFlyoutItem Text="Fast (500ms)" 
+                                    <RadioMenuFlyoutItem Text="Fast (500ms)"
                                                          IsChecked="{x:Bind ViewModel.IsFastActive, Mode=OneWay}"
                                                          Command="{x:Bind ViewModel.ChangeSpeedCommand}"
                                                          CommandParameter="500"
                                                          GroupName="RefreshSpeed"/>
-                                    <RadioMenuFlyoutItem Text="Normal (1000ms)" 
+                                    <RadioMenuFlyoutItem Text="Normal (1000ms)"
                                                          IsChecked="{x:Bind ViewModel.IsNormalActive, Mode=OneWay}"
                                                          Command="{x:Bind ViewModel.ChangeSpeedCommand}"
                                                          CommandParameter="1000"
                                                          GroupName="RefreshSpeed"/>
                                 </MenuFlyoutSubItem>
-                                
+
                                 <MenuFlyoutSubItem Text="Backdrop Style">
                                     <MenuFlyoutSubItem.Icon>
                                         <FontIcon Glyph="&#xE7F4;"/>
                                     </MenuFlyoutSubItem.Icon>
-                                    <RadioMenuFlyoutItem Text="Acrylic" 
+                                    <RadioMenuFlyoutItem Text="Acrylic"
                                                          IsChecked="{x:Bind ViewModel.IsBackdropAcrylic, Mode=TwoWay}"
                                                          GroupName="Backdrop"/>
-                                    <RadioMenuFlyoutItem Text="Mica" 
+                                    <RadioMenuFlyoutItem Text="Mica"
                                                          IsChecked="{x:Bind ViewModel.IsBackdropMica, Mode=TwoWay}"
                                                          GroupName="Backdrop"/>
-                                    <RadioMenuFlyoutItem Text="Mica Alt" 
+                                    <RadioMenuFlyoutItem Text="Mica Alt"
                                                          IsChecked="{x:Bind ViewModel.IsBackdropMicaAlt, Mode=TwoWay}"
                                                          GroupName="Backdrop"/>
                                 </MenuFlyoutSubItem>
-                                
+
                                 <MenuFlyoutSubItem Text="View Mode">
                                     <MenuFlyoutSubItem.Icon>
                                         <FontIcon Glyph="&#xE8FD;"/>
                                     </MenuFlyoutSubItem.Icon>
-                                    <RadioMenuFlyoutItem Text="Cards" 
+                                    <RadioMenuFlyoutItem Text="Cards"
                                                          IsChecked="{x:Bind ViewModel.IsCardsView, Mode=TwoWay}"
                                                          GroupName="ViewMode"/>
-                                    <RadioMenuFlyoutItem Text="Tree" 
+                                    <RadioMenuFlyoutItem Text="Tree"
                                                          IsChecked="{x:Bind ViewModel.IsTreeView, Mode=TwoWay}"
                                                          GroupName="ViewMode"/>
                                 </MenuFlyoutSubItem>
-                                
+
                                 <MenuFlyoutSubItem Text="Temperature Unit">
                                     <MenuFlyoutSubItem.Icon>
                                         <FontIcon Glyph="&#xE9CA;"/>
                                     </MenuFlyoutSubItem.Icon>
-                                    <RadioMenuFlyoutItem Text="Celsius (°C)" 
+                                    <RadioMenuFlyoutItem Text="Celsius (°C)"
                                                          IsChecked="{x:Bind ViewModel.IsCelsiusChecked, Mode=TwoWay}"
                                                          GroupName="Temperature"/>
-                                    <RadioMenuFlyoutItem Text="Fahrenheit (°F)" 
+                                    <RadioMenuFlyoutItem Text="Fahrenheit (°F)"
                                                          IsChecked="{x:Bind ViewModel.IsFahrenheitChecked, Mode=TwoWay}"
                                                          GroupName="Temperature"/>
                                 </MenuFlyoutSubItem>
-                                
+
                                 <MenuFlyoutSeparator/>
-                                
-                                <MenuFlyoutItem Text="Reset Min/Max Values" 
+
+                                <MenuFlyoutItem Text="Reset Min/Max Values"
                                                 Command="{x:Bind ViewModel.ResetMinMaxCommand}">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE845;"/>
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
-                                
-                                <MenuFlyoutItem Text="Run Diagnostic" 
+
+                                <MenuFlyoutItem Text="Run Diagnostic"
                                                 Command="{x:Bind ViewModel.RunDiagnosticCommand}">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE9D9;"/>
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
-                                
+
                                 <MenuFlyoutSeparator/>
-                                
+
                                 <MenuFlyoutSubItem Text="Hidden Items">
                                     <MenuFlyoutSubItem.Icon>
                                         <FontIcon Glyph="&#xE711;"/>
@@ -456,17 +389,14 @@
             </Grid>
         </Border>
 
-        <!-- Main content: Cards View or Tree View -->
         <Grid Grid.Row="2">
-            <!-- Cards View -->
             <ListView x:Name="HardwareList"
-                      ItemsSource="{Binding ViewModel.HardwareNodes, ElementName=RootWindow, Mode=OneWay}"
+                      ItemsSource="{x:Bind ViewModel.HardwareNodes, Mode=OneWay}"
                       SelectionMode="None"
                       IsItemClickEnabled="False"
                       Padding="24,16,24,24"
                       Visibility="{Binding ViewModel.CurrentViewMode, ElementName=RootWindow, Converter={StaticResource ViewModeToVisibilityConverter}, ConverterParameter=Cards}">
 
-            <!-- Status card as ListView header so it scrolls with content -->
             <ListView.Header>
                 <Border Style="{StaticResource StatusCardStyle}" Margin="0,0,0,16">
                     <StackPanel Spacing="12">
@@ -475,29 +405,29 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            
+
                             <StackPanel Grid.Column="0" Spacing="4">
                                 <TextBlock Text="System Status" FontSize="16" FontWeight="SemiBold"/>
-                                <TextBlock Text="{Binding ViewModel.SystemStatusText, ElementName=RootWindow, Mode=OneWay}"
+                                <TextBlock Text="{x:Bind ViewModel.SystemStatusText, Mode=OneWay}"
                                           FontSize="13"
                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                           TextWrapping="Wrap"/>
                             </StackPanel>
-                            
+
                             <ProgressRing Grid.Column="1"
-                                          IsActive="{Binding ViewModel.IsUIBusy, ElementName=RootWindow, Mode=OneWay}"
+                                          IsActive="{x:Bind ViewModel.IsUIBusy, Mode=OneWay}"
                                           Width="24"
                                           Height="24"
                                           VerticalAlignment="Center"/>
                         </Grid>
-                        
+
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            
+
                             <Border Grid.Column="0"
                                     Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                     CornerRadius="6"
@@ -506,13 +436,13 @@
                                     <TextBlock Text="Refresh Rate"
                                               FontSize="10"
                                               Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
-                                    <TextBlock Text="{Binding ViewModel.ActiveSpeedButton, ElementName=RootWindow, Mode=OneWay}"
+                                    <TextBlock Text="{x:Bind ViewModel.ActiveSpeedButton, Mode=OneWay}"
                                               FontSize="12"
                                               FontWeight="SemiBold"
                                               Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                 </StackPanel>
                             </Border>
-                            
+
                             <Border Grid.Column="1"
                                     Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                     CornerRadius="6"
@@ -521,13 +451,13 @@
                                     <TextBlock Text="Update Rate"
                                               FontSize="10"
                                               Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
-                                    <TextBlock Text="{Binding ViewModel.UpsIndicator, ElementName=RootWindow, Mode=OneWay}"
+                                    <TextBlock Text="{x:Bind ViewModel.UpsIndicator, Mode=OneWay}"
                                               FontSize="12"
                                               FontWeight="SemiBold"
                                               Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                 </StackPanel>
                             </Border>
-                            
+
                             <Border Grid.Column="2"
                                     Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                     CornerRadius="6"
@@ -536,7 +466,7 @@
                                     <TextBlock Text="Theme"
                                               FontSize="10"
                                               Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
-                                    <TextBlock Text="{Binding ViewModel.BackdropIndicator, ElementName=RootWindow, Mode=OneWay}"
+                                    <TextBlock Text="{x:Bind ViewModel.BackdropIndicator, Mode=OneWay}"
                                               FontSize="12"
                                               FontWeight="SemiBold"
                                               Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
@@ -576,7 +506,7 @@
                                    HorizontalAlignment="Stretch"
                                    HorizontalContentAlignment="Stretch"
                                    Click="ToggleExpand_Click"
-                                   Tag="{Binding}">
+                                   Tag="{Binding Mode=OneWay}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -586,7 +516,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <FontIcon Grid.Column="0"
-                                             Glyph="{Binding IsExpanded, Converter={StaticResource BoolToExpandIconConverter}}"
+                                             Glyph="{Binding IsExpanded, Converter={StaticResource BoolToExpandIconConverter}, Mode=OneWay}"
                                              FontSize="14"
                                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                              Margin="0,0,8,0"
@@ -600,13 +530,13 @@
                                               VerticalAlignment="Center"/>
 
                                     <TextBlock Grid.Column="2"
-                                              Text="{Binding Name}"
+                                              Text="{x:Bind Name, Mode=OneWay}"
                                               FontSize="16"
                                               FontWeight="SemiBold"
                                               VerticalAlignment="Center"/>
 
                                     <TextBlock Grid.Column="3"
-                                               Text="{Binding SensorCount}"
+                                               Text="{x:Bind SensorCount, Mode=OneWay}"
                                                FontSize="12"
                                                FontWeight="SemiBold"
                                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
@@ -615,24 +545,24 @@
                                 </Grid>
                             </Button>
 
-                            <ItemsControl ItemsSource="{Binding SensorGroups}"
-                                         Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
+                            <ItemsControl ItemsSource="{x:Bind SensorGroups, Mode=OneWay}"
+                                         Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                                          ItemTemplate="{StaticResource SensorGroupTemplate}"/>
 
-                            <ItemsControl ItemsSource="{Binding SubHardware}"
-                                         Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
+                            <ItemsControl ItemsSource="{x:Bind SubHardware, Mode=OneWay}"
+                                         Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                                          Margin="16,8,0,0">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="models:HardwareNode">
                                         <Border Style="{StaticResource HardwareCardStyle}">
-                                            <StackPanel Spacing="12">
+                                            <StackPanel Spacing="8">
                                                 <Button Background="Transparent"
                                                         BorderThickness="0"
                                                         Padding="0"
                                                         HorizontalAlignment="Stretch"
                                                         HorizontalContentAlignment="Stretch"
                                                         Click="ToggleExpand_Click"
-                                                        Tag="{Binding}">
+                                                        Tag="{Binding Mode=OneWay}">
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="Auto"/>
@@ -642,7 +572,7 @@
                                                         </Grid.ColumnDefinitions>
 
                                                         <FontIcon Grid.Column="0"
-                                                                  Glyph="{Binding IsExpanded, Converter={StaticResource BoolToExpandIconConverter}}"
+                                                                  Glyph="{Binding IsExpanded, Converter={StaticResource BoolToExpandIconConverter}, Mode=OneWay}"
                                                                   FontSize="12"
                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                                   Margin="0,0,8,0"
@@ -656,13 +586,13 @@
                                                                   VerticalAlignment="Center"/>
 
                                                         <TextBlock Grid.Column="2"
-                                                                  Text="{Binding Name}"
+                                                                  Text="{x:Bind Name, Mode=OneWay}"
                                                                   FontSize="14"
                                                                   FontWeight="SemiBold"
                                                                   VerticalAlignment="Center"/>
 
                                                         <TextBlock Grid.Column="3"
-                                                                   Text="{Binding SensorCount}"
+                                                                   Text="{x:Bind SensorCount, Mode=OneWay}"
                                                                    FontSize="11"
                                                                    FontWeight="SemiBold"
                                                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
@@ -671,9 +601,9 @@
                                                     </Grid>
                                                 </Button>
 
-                                                <ItemsControl ItemsSource="{Binding SensorGroups}"
-                                                             Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                             ItemTemplate="{StaticResource SubSensorGroupTemplate}"/>
+                                                <ItemsControl ItemsSource="{x:Bind SensorGroups, Mode=OneWay}"
+                                                              Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
+                                                              ItemTemplate="{StaticResource SensorGroupTemplate}"/>
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>
@@ -684,11 +614,10 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        
-        <!-- Tree View -->
+
         <ScrollViewer Visibility="{Binding ViewModel.CurrentViewMode, ElementName=RootWindow, Converter={StaticResource ViewModeToVisibilityConverter}, ConverterParameter=Tree}"
                       Padding="24,16,24,24">
-            <ItemsControl ItemsSource="{Binding ViewModel.HardwareNodes, ElementName=RootWindow, Mode=OneWay}"
+            <ItemsControl ItemsSource="{x:Bind ViewModel.HardwareNodes, Mode=OneWay}"
                           ItemTemplate="{StaticResource TreeHardwareNodeTemplate}"/>
         </ScrollViewer>
         </Grid>
