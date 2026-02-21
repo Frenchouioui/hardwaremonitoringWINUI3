@@ -29,8 +29,7 @@ namespace HardwareMonitorWinUI3.Services
 
                 var settings = _settingsService.Settings;
 
-                if (settings.WindowX >= 0 && settings.WindowY >= 0 &&
-                    IsPositionOnScreen(settings.WindowX, settings.WindowY))
+                if (IsPositionOnScreen(settings.WindowX, settings.WindowY))
                 {
                     appWindow.Move(new PointInt32(settings.WindowX, settings.WindowY));
                     appWindow.Resize(new SizeInt32(settings.WindowWidth, settings.WindowHeight));
