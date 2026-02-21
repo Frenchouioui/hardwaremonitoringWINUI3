@@ -1,7 +1,6 @@
 using System.Threading;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace HardwareMonitorWinUI3.Models
 {
@@ -139,7 +138,9 @@ namespace HardwareMonitorWinUI3.Models
         public bool ShowBattery { get => Interlocked.CompareExchange(ref _showBattery, 0, 0) == 1; set => Interlocked.Exchange(ref _showBattery, value ? 1 : 0); }
         public bool ShowPsu { get => Interlocked.CompareExchange(ref _showPsu, 0, 0) == 1; set => Interlocked.Exchange(ref _showPsu, value ? 1 : 0); }
 
+        [JsonIgnore]
         public ThreadSafeStringSet CollapsedHardwareNodes => _collapsedHardwareNodes;
+        [JsonIgnore]
         public ThreadSafeStringSet CollapsedSensorGroups => _collapsedSensorGroups;
 
         [System.Text.Json.Serialization.JsonPropertyName("collapsedHardwareNodes")]
