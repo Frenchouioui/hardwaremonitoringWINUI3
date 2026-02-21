@@ -17,7 +17,7 @@ A modern hardware monitoring application built with **WinUI 3** and **.NET 10**,
 - **Modern UI** - Native Windows 11 design with Mica/Acrylic backdrop support
 - **Adjustable Refresh Rate** - Ultra (250ms), Fast (500ms), Normal (1000ms)
 - **Min/Max Tracking** - Monitor sensor value ranges with reset capability
-- **Hardware Filtering** - Toggle visibility per hardware category
+- **Hardware Filtering** - Toggle visibility per category and hide individual items via right-click
 - **Temperature Unit** - Toggle between Celsius and Fahrenheit
 - **State Persistence** - Expand/collapse states saved across sessions
 - **Diagnostic Mode** - Force hardware re-detection for troubleshooting
