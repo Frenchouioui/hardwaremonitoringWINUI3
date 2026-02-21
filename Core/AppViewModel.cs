@@ -73,20 +73,17 @@ namespace HardwareMonitorWinUI3.Core
                 nodesSnapshot = _hardwareService.HardwareNodes.ToArray();
             }
 
-            var desired = new HashSet<HardwareNode>(nodesSnapshot.Where(ShouldShowHardwareNode));
+            var sortedNodes = nodesSnapshot
+                .Where(ShouldShowHardwareNode)
+                .OrderBy(n => (int)n.Category)
+                .ToList();
 
             bool dispatched = _dispatch(() =>
             {
-                for (int i = _filteredHardwareNodes.Count - 1; i >= 0; i--)
+                _filteredHardwareNodes.Clear();
+                foreach (var node in sortedNodes)
                 {
-                    if (!desired.Contains(_filteredHardwareNodes[i]))
-                        _filteredHardwareNodes.RemoveAt(i);
-                }
-
-                foreach (var node in nodesSnapshot)
-                {
-                    if (desired.Contains(node) && !_filteredHardwareNodes.Contains(node))
-                        _filteredHardwareNodes.Add(node);
+                    _filteredHardwareNodes.Add(node);
                 }
             });
 

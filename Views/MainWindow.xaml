@@ -322,10 +322,10 @@
                             <Flyout Placement="BottomEdgeAlignedRight">
                                 <StackPanel Spacing="12" MinWidth="180">
                                     <TextBlock Text="Hardware Display" FontSize="14" FontWeight="SemiBold"/>
-                                    <ToggleSwitch Header="CPU" IsOn="{x:Bind ViewModel.ShowCPU, Mode=TwoWay}"/>
-                                    <ToggleSwitch Header="GPU" IsOn="{x:Bind ViewModel.ShowGPU, Mode=TwoWay}"/>
                                     <ToggleSwitch Header="Motherboard" IsOn="{x:Bind ViewModel.ShowMotherboard, Mode=TwoWay}"/>
+                                    <ToggleSwitch Header="CPU" IsOn="{x:Bind ViewModel.ShowCPU, Mode=TwoWay}"/>
                                     <ToggleSwitch Header="Memory" IsOn="{x:Bind ViewModel.ShowMemory, Mode=TwoWay}"/>
+                                    <ToggleSwitch Header="GPU" IsOn="{x:Bind ViewModel.ShowGPU, Mode=TwoWay}"/>
                                     <ToggleSwitch Header="Storage" IsOn="{x:Bind ViewModel.ShowStorage, Mode=TwoWay}"/>
                                     <ToggleSwitch Header="Network" IsOn="{x:Bind ViewModel.ShowNetwork, Mode=TwoWay}"/>
                                     <ToggleSwitch Header="Controller" IsOn="{x:Bind ViewModel.ShowController, Mode=TwoWay}"/>
