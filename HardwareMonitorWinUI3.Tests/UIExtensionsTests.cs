@@ -65,11 +65,11 @@ public class UIExtensionsTests
     }
 
     [Fact]
-    public void GetSensorUnit_Throughput_ReturnsMBs()
+    public void GetSensorUnit_Throughput_ReturnsBs()
     {
         var unit = SensorType.Throughput.GetSensorUnit();
 
-        Assert.Equal("MB/s", unit);
+        Assert.Equal("B/s", unit);
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class UIExtensionsTests
     [InlineData(SensorType.Fan, "RPM", "F0")]
     [InlineData(SensorType.Power, "W", "F1")]
     [InlineData(SensorType.Data, "GB", "F1")]
-    [InlineData(SensorType.Throughput, "MB/s", "F0")]
+    [InlineData(SensorType.Throughput, "B/s", "F1")]
     public void SensorType_HasCorrectUnitAndPrecision(SensorType type, string expectedUnit, string expectedPrecision)
     {
         Assert.Equal(expectedUnit, type.GetSensorUnit());

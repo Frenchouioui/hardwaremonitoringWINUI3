@@ -17,6 +17,8 @@ namespace HardwareMonitorWinUI3.Shared
         private const long MaxLogFileSize = 10 * 1024 * 1024;
         private bool _disposed;
         private int _isProcessing;
+        private int _writeFailureCount;
+        private const int MaxWriteFailures = 5;
         
         private readonly Channel<string> _channel = Channel.CreateUnbounded<string>(new UnboundedChannelOptions
         {
@@ -57,6 +59,7 @@ namespace HardwareMonitorWinUI3.Shared
 
         private async Task ProcessLogQueueAsync()
         {
+            bool shouldRestart = false;
             try
             {
                 await foreach (var line in _channel.Reader.ReadAllAsync())
@@ -68,17 +71,34 @@ namespace HardwareMonitorWinUI3.Shared
                             CheckLogRotation();
                             EnsureWriter();
                             _writer?.WriteLine(line);
+                            Interlocked.Exchange(ref _writeFailureCount, 0);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Trace.WriteLine($"[Logger] Write failed: {ex.Message}");
+                        Interlocked.Increment(ref _writeFailureCount);
+                        Trace.WriteLine($"[Logger] Write failed ({_writeFailureCount}): {ex.Message}");
+                        
+                        if (_writeFailureCount >= MaxWriteFailures)
+                        {
+                            Trace.WriteLine("[Logger] Too many write failures, attempting recovery...");
+                            shouldRestart = true;
+                            break;
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 Trace.WriteLine($"[Logger] Background writer crashed: {ex.Message}");
+                shouldRestart = true;
+            }
+
+            if (shouldRestart && !_disposed)
+            {
+                await Task.Delay(1000);
+                Interlocked.Exchange(ref _isProcessing, 0);
+                StartBackgroundWriter();
             }
         }
 
@@ -119,7 +139,10 @@ namespace HardwareMonitorWinUI3.Shared
         {
             var line = $"[{DateTime.Now:HH:mm:ss.fff}] [{level}] {message ?? "(null)"}";
             Trace.WriteLine(line);
-            _channel.Writer.TryWrite(line);
+            if (!_channel.Writer.TryWrite(line))
+            {
+                Trace.WriteLine($"[Logger] Failed to write to channel: channel closed or full");
+            }
         }
 
         private void EnsureWriter()
@@ -148,7 +171,11 @@ namespace HardwareMonitorWinUI3.Shared
 
                         string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
                         string backupPath = Path.Combine(_logDirectory, $"monitor_{timestamp}.log.bak");
-                        File.Move(currentPath, backupPath);
+                        
+                        if (!TryMoveWithRetry(currentPath, backupPath, 3))
+                        {
+                            Trace.WriteLine($"[Logger] Failed to rotate log file after retries");
+                        }
 
                         _ = CleanupOldLogsAsync();
                     }
@@ -157,6 +184,38 @@ namespace HardwareMonitorWinUI3.Shared
             catch (Exception ex)
             {
                 Trace.WriteLine($"[Logger] CheckLogRotation failed: {ex.Message}");
+            }
+        }
+
+        private bool TryMoveWithRetry(string source, string destination, int maxRetries)
+        {
+            for (int i = 0; i < maxRetries; i++)
+            {
+                try
+                {
+                    File.Move(source, destination);
+                    return true;
+                }
+                catch (IOException)
+                {
+                    Thread.Sleep(100 * (i + 1));
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Thread.Sleep(100 * (i + 1));
+                }
+            }
+            
+            try
+            {
+                File.Copy(source, destination, overwrite: true);
+                File.Delete(source);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"[Logger] Fallback copy also failed: {ex.Message}");
+                return false;
             }
         }
 

@@ -520,10 +520,28 @@ namespace HardwareMonitorWinUI3.Core
                     _ = Task.Run(async () =>
                     {
                         await Task.Delay(100);
+                        int countToSave;
                         lock (_saveLock)
                         {
-                            _settingsService.Save();
-                            _pendingSaveCount = 0;
+                            countToSave = _pendingSaveCount;
+                        }
+                        if (countToSave > 0)
+                        {
+                            try
+                            {
+                                _settingsService.Save();
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogWarning($"Failed to save settings: {ex.Message}");
+                            }
+                            finally
+                            {
+                                lock (_saveLock)
+                                {
+                                    _pendingSaveCount = 0;
+                                }
+                            }
                         }
                     });
                 }
@@ -710,6 +728,18 @@ namespace HardwareMonitorWinUI3.Core
 
         private async void OnTimerTick(object? sender, EventArgs e)
         {
+            try
+            {
+                await OnTimerTickAsync(sender, e);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCriticalError("OnTimerTick", ex);
+            }
+        }
+
+        private async Task OnTimerTickAsync(object? sender, EventArgs e)
+        {
             if (_isUIBusy || !IsInitialized) return;
 
             try
@@ -747,7 +777,10 @@ namespace HardwareMonitorWinUI3.Core
             {
                 _settingsService.Save();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Failed to save settings on dispose: {ex.Message}");
+            }
 
             _cts.Cancel();
             _cts.Dispose();

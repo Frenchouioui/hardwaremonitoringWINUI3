@@ -148,7 +148,7 @@ namespace HardwareMonitorWinUI3.Services
             }
         }
 
-        private static bool IsPositionOnScreen(int x, int y)
+        private bool IsPositionOnScreen(int x, int y)
         {
             try
             {
@@ -163,8 +163,9 @@ namespace HardwareMonitorWinUI3.Services
                 }
                 return false;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogWarning($"Failed to check screen position: {ex.Message}");
                 return true;
             }
         }

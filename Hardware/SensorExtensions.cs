@@ -15,9 +15,10 @@ namespace HardwareMonitorWinUI3.Hardware
             get => (TemperatureUnit)Interlocked.CompareExchange(ref _currentTemperatureUnit, 0, 0);
             set
             {
-                var oldValue = Interlocked.CompareExchange(ref _currentTemperatureUnit, 0, 0);
-                if ((int)value != Interlocked.Exchange(ref _currentTemperatureUnit, (int)value))
+                var oldValue = (TemperatureUnit)Interlocked.CompareExchange(ref _currentTemperatureUnit, 0, 0);
+                if (oldValue != value)
                 {
+                    Interlocked.Exchange(ref _currentTemperatureUnit, (int)value);
                     TemperatureUnitChanged?.Invoke(null, EventArgs.Empty);
                 }
             }
@@ -140,6 +141,7 @@ namespace HardwareMonitorWinUI3.Hardware
         {
             const int KB = 1024;
             const int MB = 1048576;
+            const int GB = 1073741824;
             
             if (sensorName == "Connection Speed")
             {
@@ -147,10 +149,10 @@ namespace HardwareMonitorWinUI3.Hardware
                     return $"{value:F0} bps";
                 else if (value < MB)
                     return $"{value / KB:F1} Kbps";
-                else if (value < 1073741824)
+                else if (value < GB)
                     return $"{value / MB:F1} Mbps";
                 else
-                    return $"{value / 1073741824:F1} Gbps";
+                    return $"{value / GB:F1} Gbps";
             }
             
             return value < MB 

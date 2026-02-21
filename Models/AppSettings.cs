@@ -1,5 +1,7 @@
 using System.Threading;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Linq;
 
 namespace HardwareMonitorWinUI3.Models
 {
@@ -14,6 +16,68 @@ namespace HardwareMonitorWinUI3.Models
     {
         Celsius = 0,
         Fahrenheit = 1
+    }
+
+    public class ThreadSafeStringSet
+    {
+        private readonly HashSet<string> _set = new();
+        private readonly object _lock = new();
+
+        public bool Contains(string item)
+        {
+            lock (_lock)
+            {
+                return _set.Contains(item);
+            }
+        }
+
+        public void Add(string item)
+        {
+            lock (_lock)
+            {
+                _set.Add(item);
+            }
+        }
+
+        public bool Remove(string item)
+        {
+            lock (_lock)
+            {
+                return _set.Remove(item);
+            }
+        }
+
+        public List<string> ToList()
+        {
+            lock (_lock)
+            {
+                return new List<string>(_set);
+            }
+        }
+
+        public void InitializeFromList(List<string>? items)
+        {
+            if (items == null) return;
+            lock (_lock)
+            {
+                _set.Clear();
+                foreach (var item in items)
+                {
+                    _set.Add(item);
+                }
+            }
+        }
+
+        public int Count
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _set.Count;
+                }
+            }
+        }
     }
 
     public class AppSettings
@@ -37,6 +101,9 @@ namespace HardwareMonitorWinUI3.Models
         private int _temperatureUnit;
         private int _showBattery = 1;
         private int _showPsu = 1;
+
+        private readonly ThreadSafeStringSet _collapsedHardwareNodes = new();
+        private readonly ThreadSafeStringSet _collapsedSensorGroups = new();
 
         public int WindowX { get => _windowX; set => _windowX = value; }
         public int WindowY { get => _windowY; set => _windowY = value; }
@@ -72,8 +139,22 @@ namespace HardwareMonitorWinUI3.Models
         public bool ShowBattery { get => Interlocked.CompareExchange(ref _showBattery, 0, 0) == 1; set => Interlocked.Exchange(ref _showBattery, value ? 1 : 0); }
         public bool ShowPsu { get => Interlocked.CompareExchange(ref _showPsu, 0, 0) == 1; set => Interlocked.Exchange(ref _showPsu, value ? 1 : 0); }
 
-        public List<string> CollapsedHardwareNodes { get; set; } = new();
-        public List<string> CollapsedSensorGroups { get; set; } = new();
+        public ThreadSafeStringSet CollapsedHardwareNodes => _collapsedHardwareNodes;
+        public ThreadSafeStringSet CollapsedSensorGroups => _collapsedSensorGroups;
+
+        [System.Text.Json.Serialization.JsonPropertyName("collapsedHardwareNodes")]
+        public List<string> CollapsedHardwareNodesJson
+        {
+            get => _collapsedHardwareNodes.ToList();
+            set => _collapsedHardwareNodes.InitializeFromList(value);
+        }
+
+        [System.Text.Json.Serialization.JsonPropertyName("collapsedSensorGroups")]
+        public List<string> CollapsedSensorGroupsJson
+        {
+            get => _collapsedSensorGroups.ToList();
+            set => _collapsedSensorGroups.InitializeFromList(value);
+        }
 
         public ViewMode ViewMode
         {
@@ -85,7 +166,7 @@ namespace HardwareMonitorWinUI3.Models
         {
             lock (_lock)
             {
-                return new AppSettings
+                var snapshot = new AppSettings
                 {
                     WindowX = _windowX,
                     WindowY = _windowY,
@@ -104,10 +185,11 @@ namespace HardwareMonitorWinUI3.Models
                     ViewMode = (ViewMode)_viewMode,
                     TemperatureUnit = (TemperatureUnit)_temperatureUnit,
                     ShowBattery = _showBattery == 1,
-                    ShowPsu = _showPsu == 1,
-                    CollapsedHardwareNodes = new List<string>(CollapsedHardwareNodes),
-                    CollapsedSensorGroups = new List<string>(CollapsedSensorGroups)
+                    ShowPsu = _showPsu == 1
                 };
+                snapshot._collapsedHardwareNodes.InitializeFromList(_collapsedHardwareNodes.ToList());
+                snapshot._collapsedSensorGroups.InitializeFromList(_collapsedSensorGroups.ToList());
+                return snapshot;
             }
         }
     }

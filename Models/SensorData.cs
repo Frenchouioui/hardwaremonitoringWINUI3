@@ -1,5 +1,6 @@
 using System;
 using HardwareMonitorWinUI3.Core;
+using HardwareMonitorWinUI3.Hardware;
 
 namespace HardwareMonitorWinUI3.Models
 {
@@ -345,6 +346,20 @@ public void UpdateMinMax(float currentValue, string unit, string precision = "F1
             _maxValue = "N/A";
             OnPropertyChanged(nameof(MinValue));
             OnPropertyChanged(nameof(MaxValue));
+        }
+
+        #endregion
+
+        #region IDisposable Implementation
+
+        protected override void DisposeManaged()
+        {
+            if (_subscribedToTemperatureChange)
+            {
+                SensorExtensions.TemperatureUnitChanged -= OnTemperatureUnitChanged;
+                _subscribedToTemperatureChange = false;
+            }
+            base.DisposeManaged();
         }
 
         #endregion

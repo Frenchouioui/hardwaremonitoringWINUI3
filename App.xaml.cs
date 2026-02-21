@@ -95,8 +95,13 @@ namespace HardwareMonitorWinUI3
                 _serviceProvider = null;
                 _dispatcherQueue = null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                if (_serviceProvider != null)
+                {
+                    var logger = _serviceProvider.GetService<ILogger>();
+                    logger?.LogWarning($"Error during cleanup: {ex.Message}");
+                }
             }
         }
     }
