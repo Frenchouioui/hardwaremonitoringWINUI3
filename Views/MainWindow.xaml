@@ -102,44 +102,46 @@
 
             <DataTemplate x:Key="SensorDataTemplate" x:DataType="models:SensorData">
                 <Border Style="{StaticResource SensorCardStyle}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" Margin="0,0,0,2">
+                    <StackPanel Spacing="4">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
                             <FontIcon Glyph="{Binding Icon}"
                                       FontFamily="Segoe MDL2 Assets"
                                       FontSize="12"
                                       VerticalAlignment="Center"/>
                             <TextBlock Text="{Binding Name}"
-                                      FontSize="13"
+                                      FontSize="12"
                                       FontWeight="SemiBold"
                                       Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                                       TextTrimming="CharacterEllipsis"
+                                      TextWrapping="NoWrap"
                                       MaxLines="1"
                                       VerticalAlignment="Center"
                                       ToolTipService.ToolTip="{Binding Name}"/>
                         </StackPanel>
 
-                        <TextBlock Grid.Row="1"
-                                   Text="{Binding Value}"
-                                   FontSize="18"
+                        <TextBlock Text="{Binding Value}"
+                                   FontSize="16"
                                    FontWeight="Bold"
                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                   Margin="0,2,0,4"/>
+                                   TextTrimming="CharacterEllipsis"
+                                   TextWrapping="NoWrap"
+                                   ToolTipService.ToolTip="{Binding Value}"/>
 
-                        <Grid Grid.Row="2" Margin="0,0,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="{Binding MinValue}" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <TextBlock Grid.Column="1" Text="{Binding MaxValue}" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Right"/>
-                        </Grid>
-                    </Grid>
+                        <StackPanel Spacing="2" Margin="0,4,0,0">
+                            <TextBlock Text="{Binding MinValue}" 
+                                      FontSize="11" 
+                                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                      TextTrimming="CharacterEllipsis"
+                                      TextWrapping="NoWrap"
+                                      ToolTipService.ToolTip="{Binding MinValue}"/>
+                            <TextBlock Text="{Binding MaxValue}" 
+                                      FontSize="11" 
+                                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                      TextTrimming="CharacterEllipsis"
+                                      TextWrapping="NoWrap"
+                                      ToolTipService.ToolTip="{Binding MaxValue}"/>
+                        </StackPanel>
+                    </StackPanel>
                 </Border>
             </DataTemplate>
 
@@ -472,13 +474,13 @@
                                     CornerRadius="6"
                                     Padding="12,8">
                                 <StackPanel Spacing="2">
+                                    <TextBlock Text="Refresh Rate"
+                                              FontSize="10"
+                                              Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
                                     <TextBlock Text="{Binding ViewModel.ActiveSpeedButton, ElementName=RootWindow, Mode=OneWay}"
                                               FontSize="12"
                                               FontWeight="SemiBold"
                                               Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                                    <TextBlock Text="Refresh Rate"
-                                              FontSize="10"
-                                              Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
                                 </StackPanel>
                             </Border>
                             
@@ -487,13 +489,13 @@
                                     CornerRadius="6"
                                     Padding="12,8">
                                 <StackPanel Spacing="2">
+                                    <TextBlock Text="Update Rate"
+                                              FontSize="10"
+                                              Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
                                     <TextBlock Text="{Binding ViewModel.UpsIndicator, ElementName=RootWindow, Mode=OneWay}"
                                               FontSize="12"
                                               FontWeight="SemiBold"
                                               Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                                    <TextBlock Text="Update Rate"
-                                              FontSize="10"
-                                              Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
                                 </StackPanel>
                             </Border>
                             
@@ -502,13 +504,13 @@
                                     CornerRadius="6"
                                     Padding="12,8">
                                 <StackPanel Spacing="2">
+                                    <TextBlock Text="Theme"
+                                              FontSize="10"
+                                              Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
                                     <TextBlock Text="{Binding ViewModel.BackdropIndicator, ElementName=RootWindow, Mode=OneWay}"
                                               FontSize="12"
                                               FontWeight="SemiBold"
                                               Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
-                                    <TextBlock Text="Theme"
-                                              FontSize="10"
-                                              Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
                                 </StackPanel>
                             </Border>
                         </Grid>

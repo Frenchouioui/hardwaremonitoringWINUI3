@@ -59,7 +59,7 @@ namespace HardwareMonitorWinUI3.Models
             {
                 if (_sensorType == "Temperature" && _minTempCelsius.HasValue)
                 {
-                    return FormatTemperature(_minTempCelsius.Value);
+                    return $"Min: {FormatTemperature(_minTempCelsius.Value)}";
                 }
                 return _minValue;
             }
@@ -72,7 +72,7 @@ namespace HardwareMonitorWinUI3.Models
             {
                 if (_sensorType == "Temperature" && _maxTempCelsius.HasValue)
                 {
-                    return FormatTemperature(_maxTempCelsius.Value);
+                    return $"Max: {FormatTemperature(_maxTempCelsius.Value)}";
                 }
                 return _maxValue;
             }
