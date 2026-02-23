@@ -8,7 +8,7 @@
 
 A modern hardware monitoring application built with **WinUI 3** and **.NET 10**, featuring real-time sensor tracking with a clean, native Windows 11 interface.
 
-![Hardware Monitor Screenshot](Assets/HardwareMonitorWinUI3_LKb2Hf9uIw.gif)
+![Hardware Monitor Screenshot](Assets/app.gif)
 
 ## Features
 
